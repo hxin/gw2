@@ -2602,6 +2602,13 @@ function getEnvList ()
          return envList
 end
 
+function readMapCordFromFile()
+         local LIP = require 'libs.LIP';
+         local map_id =LIP.load('locations/maps.ini');
+         --[[LIP.save('savedata.ini', data);]]--
+         print(dumpTable(map_id))
+end
+
 
 
 -------------------------------
