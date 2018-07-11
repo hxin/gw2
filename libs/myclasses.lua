@@ -6,12 +6,13 @@ local function myObject()
     return self
 end
 
-function Map(map_id)
+
+local function Map(map_id)
     local self = myObject{}
 
     self.map_id2name=nil
     self.name = nil
-    self.POIS={}
+    self.nodes={}
 
     local map_meta_file = 'locations/maps.ini'
     local id = id
@@ -35,22 +36,27 @@ function Map(map_id)
 
     --load Cords for the map
     for k,v in pairs(self.readMapCordsByMapID(id)) do
-        self.POIS[k] = POI(v['x'],v['y'],v['z'],v['pos'],v['map'])
+        self.nodes[k] = Node(v['x'],v['y'],v['z'],v['pos'],v['map'],'')
     end
 
     return self
 end
 
-function POI(x,y,z,type,subtype)
+
+function Node(x,y,z,nodetype,map,meta)
     local self = myObject{}
 
     self.x=x
     self.y=y
     self.z=z
-    self.type = type
-    self.subtype = subtype
+    self.nodetype = nodetype
+    self.map = map
+    self.meta = meta
+    self.idstring = table.concat({x,y,z,nodetype,map,meta})
 
-
+    function self.getIdstring()
+        return self.idstring
+    end
 
     local TYPES = {
         resource = 1,
@@ -74,7 +80,8 @@ end
 -- @param String hex
 -- @return Address object
 -- @usage Address('A0')
-function Address(hex)
+local function Address(hex)
+  
     local self = myObject{}
 
     self.hex = hex
@@ -88,6 +95,10 @@ function Address(hex)
 
     function self.getValueInteger()
         return readInteger(self.hex)
+    end
+    
+    function self.getValueHex()
+        return toHex(readInteger(self.hex))
     end
 
     function self.setValueFloat(float)
@@ -103,7 +114,7 @@ function Address(hex)
     end
 
     function self.update()
-        self.value = toHex(self.getValueInteger(self.hex))
+        self.value = self.getValueHex()
     end
 
     function self.addOffset(offsetHex)
@@ -117,7 +128,8 @@ function Address(hex)
 end
 
 
-function Cord(AddressX,Addressy,AddressZ)
+
+local function Cord(AddressX,Addressy,AddressZ)
     local self = myObject{}
 
     local xAddress = AddressX
@@ -175,7 +187,9 @@ end
 
 
 
-function Player()
+
+local function Player()
+  
     local self = myObject{}
 
     local baseAddressHex = toHex(readInteger('playerBase'))
@@ -238,4 +252,58 @@ function Player()
 end
 
 
+
+local function NodeManager()
+    local self = myObject{}
+    self.nodes = {}
+    self.IDENTIFIER = {mine='3FE04BBF',tree='408ED607',herb='3E24AAFC'}
+    
+    function self.getNodesFromResourceNodeArray()
+        for i,nodeBaseAddressHex in pairs(self.getResourceNodeArray()) do
+            local nodeBaseAddress = Address(nodeBaseAddressHex)
+            local x = Address( nodeBaseAddress.addOffset('30') ).getValueFloat()
+            local y = Address( nodeBaseAddress.addOffset('34') ).getValueFloat()
+            local z = Address( nodeBaseAddress.addOffset('38') ).getValueFloat()
+            local nodetype = Address( nodeBaseAddress.addOffset('A0') ).getValueHex()
+            local map = 'map_id'
+            for k,v in pairs(self.IDENTIFIER) do
+              if type_identifier == v then
+                local node = Node(x,y,z,k,map,'')
+                self.nodes[node.getIdstring()] = node
+                break
+              end
+            end
+            local node = Node(x,y,z,'unknown',map,'') 
+            self.nodes[node.getIdstring()] = node
+         end
+        return self.nodes
+    end
+    
+    function self.getResourceNodeArray ()
+         local size = readInteger('arr_size')
+         local envListAddress = toHex(getAddress('arr'))
+         local envList = {}
+
+         for i=1,size,1 do
+             local add = toHex(readInteger(addHex(envListAddress,toHex(4*i))))
+              if self.isResourceNode(add) then
+                   envList[i]=toHex(readInteger(addHex(envListAddress,toHex(4*i))))
+              end
+         end
+         return envList
+    end
+    
+    
+    function self.isResourceNode(add)
+         local keys ={}
+         keys[self.IDENTIFIER['mine']]=true
+         keys[self.IDENTIFIER['tree']]=true
+         --keys[IDENTIFIER['herb']]=true
+         check1=toHex(readInteger(addHex(add,'A0')))
+         return readFloat(add) == 1 and readFloat(addHex(add,'28'))==1 and readInteger(addHex(add,'AC'))==1 and keys[check1]
+    end
+    
+    return self
+    
+end
 
