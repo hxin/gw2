@@ -6,7 +6,7 @@ local function myObject()
     return self
 end
 
-function Map(id)
+function Map(map_id)
     local self = myObject{}
 
     self.map_id2name=nil
@@ -31,7 +31,7 @@ function Map(id)
     end
 
     self.map_id2name = self.readMapID()
-    self.name = self.map_id2name[id]
+    self.name = self.map_id2name[map_id]
 
     --load Cords for the map
     for k,v in pairs(self.readMapCordsByMapID(id)) do
@@ -91,15 +91,15 @@ function Address(hex)
     end
 
     function self.setValueFloat(float)
-        writeFloat(float)
+        writeFloat(self.hex,float)
         self.update()
         return self
     end
 
     function self.setValueInteger(int)
-        writeInteger(int)
+        writeInteger(self.hex,int)
         self.update()
-        return c
+        return self
     end
 
     function self.update()
@@ -107,7 +107,7 @@ function Address(hex)
     end
 
     function self.addOffset(offsetHex)
-        return addHex(self.value,offsetHex)
+        return addHex(self.hex,offsetHex)
     end
 
 
@@ -116,54 +116,57 @@ function Address(hex)
     return self
 end
 
-function Cord(xAddress,yAddress,zAddress)
+
+function Cord(AddressX,Addressy,AddressZ)
     local self = myObject{}
 
-    local xAddress = xAddress
-    local yAddress = yAddress
-    local zAddress = zAddress
+    local xAddress = AddressX
+    local yAddress = Addressy
+    local zAddress = AddressZ
 
-    function getX()
+    function self.getXAddress()
         return xAddress
     end
-    function getY()
+    function self.getYAddress()
         return yAddress
     end
-    function getY()
+    function self.getZAddress()
         return zAddress
     end
 
 
-    function setX(Address)
+    function self.setXAddress(Address)
         xAddress=Address
         return self
     end
-    function setY(Address)
+
+    function self.setYAddress(Address)
         yAddress=Address
         return self
     end
-    function setY(Address)
+
+    function self.setYAddress(Address)
         zAddress=Address
         return self
     end
 
-    function ChangeX(float)
-        xAddress.setValueInter(float)
+    function self.changeX(float)
+        xAddress.setValueFloat(float)
         return self
     end
-    function ChangeY(float)
-        yAddress.setValueInter(float)
+    function self.changeY(float)
+        yAddress.setValueFloat(float)
         return self
     end
-    function ChangeY(float)
-        zAddress.setValueInter(float)
+    function self.changeZ(float)
+        zAddress.setValueFloat(float)
         return self
     end
 
-    function changeCord(floatX,floatY,floatZ)
-        ChangeX(floatX)
-        ChangeY(floatY)
-        ChangeZ(floatZ)
+    function self.changeCord(floatX,floatY,floatZ)
+        self.changeX(floatX)
+        self.changeY(floatY)
+        self.changeZ(floatZ)
         return self
     end
 
@@ -172,81 +175,67 @@ end
 
 
 
-
-function Player(baseAddressHex)
+function Player()
     local self = myObject{}
 
-    local speed = nil
+    local baseAddressHex = toHex(readInteger('playerBase'))
     local baseAddress = Address(baseAddressHex)
+
+    local speed = nil
     local speedAddress = Address( baseAddress.addOffset('1E4') )
 
-
-    local xAddress = Address( readInteger("["..baseAddress .. " + 98] + D0"))
+    local xAddress = Address( toHex(getAddress("["..baseAddressHex .. " + 98] + D0")) )
     local yAddress = Address( xAddress.addOffset('4') )
     local zAddress = Address( xAddress.addOffset('8') )
-    local playCord = Cord(xAddress,yAddress,zAddress)
+    local playerCord = Cord(xAddress,yAddress,zAddress)
 
 
     function self.getSpeed()
+        speed = speedAddress.getValueFloat()
         return speed
     end
 
     function self.setSpeed(float)
-        writeFloat(float)
+        speedAddress.setValueFloat(float)
         speed = self.getSpeed()
         return self
     end
 
     function self.getCord()
-        return playCord
+        return playerCord
     end
 
-    function self.setCord(Cord)
-        playCord = Cord
-        return self
-    end
+--    function self.setCord(Cord)
+--        playerCord = Cord
+--        return self
+--    end
 
     function self.move(floatX,floatY,floatZ)
-        playCord.changeCord(floatX,floatY,floatZ)
+        playerCord.changeCord(floatX,floatY,floatZ)
         return self
     end
-
-
-
+    
+    function self.moveX(float)
+        local newValue = playerCord.getXAddress().getValueFloat() + float
+        playerCord.changeX(newValue)
+        return self
+    end
+    
+    function self.moveY(float)
+        local newValue = playerCord.getYAddress().getValueFloat() + float
+        playerCord.changeY(float)
+        return self
+    end
+    
+    function self.moveZ(float)
+        local newValue = playerCord.getZAddress().getValueFloat() + float
+        playerCord.changeZ(float)
+        return self
+    end
+    
 
     return self
 end
 
 
 
-
-function readInteger()
-    return tonumber('160',10)
-end
-
-function readFloat()
-    return tonumber('160',10)
-end
-
-
-
-
-require 'libs.ml'.import()
-require "libs.logging"
-require "libs.utility"
-
-pd(Map(15).POIS)
---local x=Address('A0')
---p(x.getValueFloat())
---
---
---pd(Map(15).)
-
-
-
---print(tstring(split "a very short sentence"))
---tostring('aaa')
---require 'libs.ml'.import()
---tostring = tstring
---= tstring({10,20,name='joe'})
---print(split "a very short sentence")
