@@ -1,9 +1,5 @@
 addressList = getAddressList()
-IDENTIFIER = {mine='3FE04BBF',tree='408ED607',herb='3E24AAFC'}
-currentResNodeFileID = 502
-movingCounter=1
---hk1.destroy()
---hk1 = createHotkey(clickToMoveByMapCords, VK_F4)
+
 
 -----------------------
 function p (string)
@@ -43,21 +39,16 @@ function tablelength(T)
          for _ in pairs(T) do count = count + 1 end
          return count
 end
----------
 
------------------------
 function isEmpty(s)
   return s == nil or s == ''
 end
----------
 
------------------------
 function sleep(s)
   local ntime = os.clock() + s
   repeat until os.clock() > ntime
 end
 
------------------------
 function dumpTable(o)
    if type(o) == 'table' then
       local s = '{ '
@@ -70,15 +61,13 @@ function dumpTable(o)
       return tostring(o)
    end
 end
----------
 
------------------------
+
 function toHex (number_string)
          return string.format('%X', number_string)
 end
----------
 
------------------------
+
 function toNumber (hex_string)
          return tonumber(hex_string,16)
 end

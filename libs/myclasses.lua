@@ -7,19 +7,17 @@ local function myObject()
 end
 
 
-local function Map(map_id)
+local function Map()
     local self = myObject{}
-
+    
+    self.current_map_id = nil
     self.map_id2name=nil
     self.name = nil
     self.nodes={}
 
     local map_meta_file = 'locations/maps.ini'
-    local id = id
-    local name
 
-
-    function self.readMapID()
+    function self.readMapID2Name()
         return readINI(map_meta_file)['mapid']
     end
 
@@ -30,14 +28,34 @@ local function Map(map_id)
     function self.readMapCordsByMapID(id)
         return self.readMapCordsByMapName( self.map_id2name[id] )
     end
-
-    self.map_id2name = self.readMapID()
-    self.name = self.map_id2name[map_id]
-
-    --load Cords for the map
-    for k,v in pairs(self.readMapCordsByMapID(id)) do
-        self.nodes[k] = Node(v['x'],v['y'],v['z'],v['pos'],v['map'],'')
+    
+    function self.readCurrentMapCords()
+        return self.readMapCordsByMapID(self.getCurrentMapID())
     end
+    
+    function self.getCurrentMapID()
+        self.current_map_id = readInteger('[mapIDBase] + 24')
+        return self.current_map_id
+    end
+    
+    function self.getMapNodesByMapID(id)
+      --load Cords for the map
+      for k,v in pairs(self.readMapCordsByMapID(id)) do
+          self.nodes[k] = Node(v['x'],v['y'],v['z'],v['pos'],v['map'],'')
+      end
+      return self.nodes
+    end
+    
+    function self.getCurrentMapNodes()
+      --load Cords for the map
+      return self.getMapNodesByMapID(self.current_map_id)
+    end
+
+    self.map_id2name = self.readMapID2Name()
+    self.current_map_id = self.getCurrentMapID()
+    self.name = self.map_id2name[self.current_map_id]
+    
+    
 
     return self
 end
@@ -53,10 +71,27 @@ function Node(x,y,z,nodetype,map,meta)
     self.map = map
     self.meta = meta
     self.idstring = table.concat({x,y,z,nodetype,map,meta})
+    
+    function self.getX()
+      return self.x
+    end
+    
+    function self.getY()
+      return self.y
+    end
+    
+    function self.getZ()
+      return self.z
+    end
 
     function self.getIdstring()
         return self.idstring
     end
+    
+     function self.toString()
+        return table.concat({ round(self.x,1), round(self.y,1), round(self.z,1) }, ' , ')
+    end
+
 
     local TYPES = {
         resource = 1,
@@ -70,7 +105,7 @@ function Node(x,y,z,nodetype,map,meta)
         mine = 2,
         grass = 3
     }
-
+  
     return self
 end
 
@@ -180,6 +215,10 @@ local function Cord(AddressX,Addressy,AddressZ)
         self.changeY(floatY)
         self.changeZ(floatZ)
         return self
+    end
+    
+    function self.toString()
+        return table.concat({ round(xAddress.getValueFloat(),1), round(yAddress.getValueFloat(),1), round(zAddress.getValueFloat(),1) }, ' , ')
     end
 
     return self
