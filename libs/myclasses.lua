@@ -7,7 +7,7 @@ local function myObject()
 end
 
 
-local function Map()
+function Map()
     local self = myObject{}
     
     self.current_map_id = nil
@@ -18,15 +18,16 @@ local function Map()
     local map_meta_file = 'locations/maps.ini'
 
     function self.readMapID2Name()
-        return readINI(map_meta_file)['mapid']
+        return utilityFile().readINI(map_meta_file)['mapid']
     end
 
-    function self.readMapCordsByMapName(map_name)
-        return readINI('locations/' .. map_name .. '.ini')
+    function self.readMapCordsByMapName(map_name,resource)
+        if resource then map_name = map_name..'_resource' end
+        return utilityFile().readINI('locations/' .. map_name .. '.ini')
     end
 
-    function self.readMapCordsByMapID(id)
-        return self.readMapCordsByMapName( self.map_id2name[id] )
+    function self.readMapCordsByMapID(id,resource)
+        return self.readMapCordsByMapName( self.map_id2name[id],resource)
     end
     
     function self.readCurrentMapCords()
@@ -38,17 +39,26 @@ local function Map()
         return self.current_map_id
     end
     
-    function self.getMapNodesByMapID(id)
+    function self.getMapNodesByMapID(id,resource)
       --load Cords for the map
-      for k,v in pairs(self.readMapCordsByMapID(id)) do
-          self.nodes[k] = Node(v['x'],v['y'],v['z'],v['pos'],v['map'],'')
+      for k,v in pairs(self.readMapCordsByMapID(id,resource)) do
+          if v['pos'] then 
+            self.nodes[k] = Node(v['x'],v['y'],v['z'],k,v['map'],'')
+          else
+            self.nodes[k] = Node(v['x'],v['y'],v['z'],v['type'],v['map'],v['meta'])
+          end
       end
       return self.nodes
     end
     
-    function self.getCurrentMapNodes()
+    function self.getCurrentMapNodes(resource)
       --load Cords for the map
-      return self.getMapNodesByMapID(self.current_map_id)
+      return self.getMapNodesByMapID(self.current_map_id,resource)
+    end
+    
+    function self.saveResNodesToMapFile(nodes) 
+      local map_name = self.readMapID2Name()[self.getCurrentMapID()]
+      utilityFile().saveINI('locations/' .. map_name .. '_resource.ini',nodes)
     end
 
     self.map_id2name = self.readMapID2Name()
@@ -70,7 +80,6 @@ function Node(x,y,z,nodetype,map,meta)
     self.nodetype = nodetype
     self.map = map
     self.meta = meta
-    self.idstring = table.concat({x,y,z,nodetype,map,meta})
     
     function self.getX()
       return self.x
@@ -83,15 +92,31 @@ function Node(x,y,z,nodetype,map,meta)
     function self.getZ()
       return self.z
     end
-
-    function self.getIdstring()
-        return self.idstring
+    
+    function self.getMap()
+      return self.map
     end
     
-     function self.toString()
+    function self.getMeta()
+      return self.meta
+    end
+    
+    function self.getNodeType()
+      return self.nodetype
+    end
+    
+    
+    function self.toString()
         return table.concat({ round(self.x,1), round(self.y,1), round(self.z,1) }, ' , ')
     end
-
+    
+    function self.generateIDString()
+        return table.concat({ self.nodetype, round(self.x,1), round(self.y,1), round(self.z,1) }, ',')
+    end
+  
+    function self.toNodeForSaving (node)
+      return {x=node.getX(),y=node.getY(),z=node.getZ(),nodetype=node.getNodeType(),map=node.getMap(),meta=node.getMeta()}
+    end
 
     local TYPES = {
         resource = 1,
@@ -115,7 +140,7 @@ end
 -- @param String hex
 -- @return Address object
 -- @usage Address('A0')
-local function Address(hex)
+function Address(hex)
   
     local self = myObject{}
 
@@ -164,7 +189,7 @@ end
 
 
 
-local function Cord(AddressX,Addressy,AddressZ)
+function Cord(AddressX,Addressy,AddressZ)
     local self = myObject{}
 
     local xAddress = AddressX
@@ -227,7 +252,7 @@ end
 
 
 
-local function Player()
+function Player()
   
     local self = myObject{}
 
@@ -268,6 +293,11 @@ local function Player()
         return self
     end
     
+    function self.moveToNode(node)
+        self.move(node.getX(),node.getY(),node.getZ())
+        return self
+    end
+    
     function self.moveX(float)
         local newValue = playerCord.getXAddress().getValueFloat() + float
         playerCord.changeX(newValue)
@@ -292,8 +322,9 @@ end
 
 
 
-local function NodeManager()
+function NodeManager()
     local self = myObject{}
+    self.map_id = Map().getCurrentMapID()
     self.nodes = {}
     self.IDENTIFIER = {mine='3FE04BBF',tree='408ED607',herb='3E24AAFC'}
     
@@ -303,17 +334,14 @@ local function NodeManager()
             local x = Address( nodeBaseAddress.addOffset('30') ).getValueFloat()
             local y = Address( nodeBaseAddress.addOffset('34') ).getValueFloat()
             local z = Address( nodeBaseAddress.addOffset('38') ).getValueFloat()
-            local nodetype = Address( nodeBaseAddress.addOffset('A0') ).getValueHex()
-            local map = 'map_id'
-            for k,v in pairs(self.IDENTIFIER) do
-              if type_identifier == v then
-                local node = Node(x,y,z,k,map,'')
-                self.nodes[node.getIdstring()] = node
-                break
-              end
-            end
-            local node = Node(x,y,z,'unknown',map,'') 
-            self.nodes[node.getIdstring()] = node
+            local nodeidentifier = Address( nodeBaseAddress.addOffset('A0') ).getValueHex() 
+
+            local nodetype=utilityTable().keyof(self.IDENTIFIER,nodeidentifier)
+            
+            if nodetype == nil then notype = 'unknown' end
+            
+            local node = Node(x,y,z,nodetype,map,nodeidentifier) 
+            self.nodes[node.generateIDString()] = node
          end
         return self.nodes
     end
@@ -346,3 +374,81 @@ local function NodeManager()
     
 end
 
+
+function utilityTable()
+    local self = myObject{}
+    
+    function self.indexof(t,value)
+        for i = 1,#t do
+            if t[i] == value then return i end
+        end
+        return nil
+    end
+    
+    function self.keyof(t,value)
+        for k,v in pairs(t) do
+            if v == value then return k end
+        end
+        return nil
+    end
+    
+    function self.keys(t)
+       local keys={}
+       for k,v in pairs(t) do table.insert(keys,k) end
+       return keys
+    end
+    
+    function self.values(t)
+       local values={}
+       for k,v in pairs(t) do table.insert(values,v) end
+       return values
+    end
+    
+    function self.merge(t1,t2)
+        for k,v in pairs(t2) do
+          t1[k] = v
+        end
+        return t1
+    end
+    
+    function self.length(T)
+         local count = 0
+         for _ in pairs(T) do count = count + 1 end
+         return count
+    end
+    
+    function self.sortedKeys(t)
+        local keys = self.keys(t)
+        table.sort(keys)
+        return keys
+    end
+
+  
+    return self
+end
+
+
+function utilityFile()
+    local self = myObject{}
+    
+    function self.readINI( fileName )
+         local LIP = require 'libs.LIP';
+         if not self.file_exists(fileName) then self.saveINI( fileName,{} ) end
+         return LIP.load(fileName);
+    end
+
+    function self.saveINI( fileName, data )
+             local LIP = require 'libs.LIP';
+             LIP.save( fileName , data);
+    end
+    
+    function self.file_exists(name)
+       local f=io.open(name,"r")
+       if f~=nil then io.close(f) return true else return false end
+    end
+    
+    
+    return self
+    
+    
+end
