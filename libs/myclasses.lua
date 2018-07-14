@@ -355,7 +355,7 @@ function NodeManager()
 
             if nodetype == nil then nodetype = 'unknown' end
 
-            local node = Node(x, y, z, nodetype, map, nodeidentifier)
+            local node = Node(x, y, z, nodetype, self.map_id, nodeidentifier)
             nodes[node.generateIDString()] = node
         end
         return nodes
