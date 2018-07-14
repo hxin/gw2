@@ -35,8 +35,7 @@ function addNodesToMapFile()
     for k,v in pairs(newNodes) do
         newNodes_simply[k] = Node().toNodeForSaving(v)
     end
-    newNodes_simply = utilityTable().merge(nodes,newNodes_simply)
-    Map().saveResNodesToMapFile(newNodes_simply)
+    Map().saveResNodesToMapFile(utilityTable().merge(nodes,newNodes_simply))
 end
 
 function moveToNextNode()
@@ -72,6 +71,60 @@ function moveToPreviousNode()
     if nodeCounter <1 then nodeCounter =  utilityTable().length(nodekeys) end
 end
 
+function moveToNextResNode()
+    if resNodeCounter==nil then resNodeCounter = 1 end
+    local nodes = Map().getCurrentMapNodes(true)
+    local nodesvalues = utilityTable().values(nodes)
+    local nodekeys = utilityTable().sortedKeys(nodes)
+    
+    GW2.CELabel_currentNodeInfo.Caption = nodekeys[resNodeCounter]
+    GW2.CELabel_node_counter.Caption = resNodeCounter
+    
+    Player().moveToNode(nodes[nodekeys[resNodeCounter]])
+    
+    resNodeCounter = resNodeCounter + 1
+    if resNodeCounter > utilityTable().length(nodekeys) then resNodeCounter = 1 end
+end
+
+
+function moveToPreviousResNode()
+    if resNodeCounter==nil then resNodeCounter = 1 end
+    local nodes = Map().getCurrentMapNodes(true)
+    local nodesvalues = utilityTable().values(nodes)
+    local nodekeys = utilityTable().sortedKeys(nodes)
+    
+    
+    GW2.CELabel_currentNodeInfo.Caption = nodekeys[resNodeCounter]
+    GW2.CELabel_node_counter.Caption = resNodeCounter
+    
+    Player().moveToNode(nodes[nodekeys[resNodeCounter]])
+    
+    nodeCounter = nodeCounter - 1
+    
+    if resNodeCounter <1 then resNodeCounter =  utilityTable().length(nodekeys) end
+end
+
+
+function updateNearNodesView()
+           local lv = GW2.CEListView_allNodes
+           listview_clear(lv)
+
+           local items = lv.items
+           items.clear()
+           
+           local nodes =  NodeManager().getNodesFromAllNodeArray()
+           
+           keys = utilityTable().sortedKeys(nodes)
+           for _,k in ipairs(keys) do
+             n = nodes[k]
+             local item = items:add()
+             item.Caption = k
+             local row_subitems=listitem_getSubItems(item) --returns a Strings object
+             strings_add(row_subitems, n.toString()) 
+             strings_add(row_subitems, n.getMeta())
+           end
+end
+
 
 ----------------------
 
@@ -98,6 +151,14 @@ function CEButton_listCurrentMapResNodesClick(sender)
       updateListViewNodesFromMap(true)
 end
 
+function CEListView_allNodesClick(sender)
+         local lv = GW2.CEListView_allNodes
+         local itemSelected = lv.getItemIndex()
+         local item = lv.Items[itemSelected]
+         local node = NodeManager().getNodesFromAllNodeArray()[item.Caption]
+         if not isEmpty(node) then Player().move(node.getX(), node.getY(), node.getZ()) end
+end
+
 
 function CEListView_nodesClick(sender)
          local lv = GW2.CEListView_nodes
@@ -110,3 +171,18 @@ function CEListView_nodesClick(sender)
          --p(item.SubItems[0])
          --p(item.SubItems[1])
 end
+
+function CEToggleBox_activate2Click(sender)
+        if (NearNodesUpdateTimer==nil) then --first time init
+          NearNodesUpdateTimer=createTimer(nil,false)
+
+          timer_setInterval(NearNodesUpdateTimer,300) --set value every 100 milliseconds
+          timer_onTimer(NearNodesUpdateTimer, updateNearNodesView)
+	      timer_setEnabled(NearNodesUpdateTimer, true)
+        else
+	      timer_setEnabled(NearNodesUpdateTimer, false) --stop the freezer
+	      NearNodesUpdateTimer.destroy()
+          NearNodesUpdateTimer = nil
+        end
+end
+

@@ -1,0 +1,178 @@
+14:37.22 Settings saved
+23:25.57 Settings saved
+23:27.07 Fullscreen detected (1920x1080) - No Offsets
+23:27.07 Trying to open Warehouse
+23:27.09 StorageAnchor: not found
+23:27.10 Clicking Transport Button
+23:27.11 Clicking WarehouseButton
+23:27.18 OCInventory Timeout
+23:27.19 StorageAnchor: 904, 284
+23:27.19 Scanning for items
+23:27.19 ore_copper absent
+23:27.21 ore_copper PRESENT
+23:27.26 Processing open: False
+23:27.27 Processing open: True
+23:27.43 Settings saved
+23:27.47 Fullscreen detected (1920x1080) - No Offsets
+23:27.47 Trying to open Warehouse
+23:27.49 StorageAnchor: not found
+23:27.50 Clicking Transport Button
+23:27.51 Clicking WarehouseButton
+23:27.58 OCInventory Timeout
+23:27.59 StorageAnchor: 904, 284
+23:27.59 Scanning for items
+23:27.59 ore_copper absent
+23:28.01 ore_copper PRESENT
+23:28.06 Processing open: False
+23:28.07 Processing open: True
+23:28.15 OCInventory Timeout
+23:28.15 Inventory not found
+23:28.15 Removing ore_copper from ProcessingQueue
+23:28.15 Proceeding to next item
+23:28.31 Manually stopping ProcessSimple
+23:30.12 Fullscreen detected (1920x1080) - No Offsets
+23:30.12 Trying to open Warehouse
+23:30.13 StorageAnchor: 1244, 120
+23:30.13 Escaping from Storage
+23:30.16 StorageAnchor: 1244, 120
+23:30.16 Escaping from Storage
+23:30.18 StorageAnchor: 1244, 120
+23:30.18 Escaping from Storage
+23:30.19 Wrong NPC? Escape and turn
+23:30.23 StorageAnchor: not found
+23:30.24 Clicking Transport Button
+23:30.26 Clicking WarehouseButton
+23:30.33 OCInventory Timeout
+23:30.34 StorageAnchor: 904, 284
+23:30.34 Scanning for items
+23:30.34 ore_copper absent
+23:30.35 ore_copper PRESENT
+23:30.40 Processing open: False
+23:30.41 Processing open: True
+23:30.49 OCInventory Timeout
+23:30.49 Inventory not found
+23:30.49 Removing ore_copper from ProcessingQueue
+23:30.49 Proceeding to next item
+23:30.51 Manually stopping ProcessSimple
+23:31.26 Fullscreen detected (1920x1080) - No Offsets
+23:31.26 Trying to open Warehouse
+23:31.28 StorageAnchor: not found
+23:31.29 Clicking Transport Button
+23:31.30 Clicking WarehouseButton
+23:31.37 OCInventory Timeout
+23:31.38 StorageAnchor: 904, 284
+23:31.38 Scanning for items
+23:31.38 ore_copper absent
+23:31.40 ore_copper PRESENT
+23:31.45 Processing open: False
+23:31.46 Processing open: True
+23:31.54 OCInventory Timeout
+23:31.54 Inventory not found
+23:31.54 Removing ore_copper from ProcessingQueue
+23:31.54 Proceeding to next item
+23:31.59 Manually stopping ProcessSimple
+23:35.28 Fullscreen detected (1920x1080) - No Offsets
+23:35.28 Trying to open Warehouse
+23:35.29 StorageAnchor: 1510, 301
+23:35.29 Escaping from Storage
+23:35.40 Fullscreen detected (1920x1080) - No Offsets
+23:35.40 Trying to open Warehouse
+23:35.42 StorageAnchor: not found
+23:35.43 Clicking Transport Button
+23:35.44 Clicking WarehouseButton
+23:35.45 Returning items to storage
+23:35.52 StorageAnchor: 904, 284
+23:35.52 Scanning for items
+23:35.52 ore_copper absent
+23:35.54 ore_copper PRESENT
+23:35.59 Processing open: False
+23:36.00 Processing open: True
+23:36.08 Waiting for Processing to end.
+23:36.17 Manually stopping ProcessSimple
+23:36.19 Processing failed
+23:36.19 Removing ore_copper from ProcessingQueue
+23:36.19 Proceeding to next item
+01:18.36 Settings saved
+01:18.58 Fullscreen detected (1920x1080) - No Offsets
+01:18.58 Skipping Queue: 0 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 1 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 2 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 3 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 4 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 5 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 6 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 7 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 8 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 9 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 10 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 11 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 12 Reason: No Processing Method selected
+01:18.58 Skipping Queue: 13 Reason: No Processing Method selected
+01:18.58 ProcessCustom finished
+01:19.11 Pause
+01:19.37 Settings saved
+01:19.44 Fullscreen detected (1920x1080) - No Offsets
+01:19.44 Trying to open Warehouse
+01:19.46 StorageAnchor: not found
+01:19.47 Clicking Transport Button
+01:19.48 Clicking WarehouseButton
+01:19.55 OCInventory Timeout
+01:19.56 StorageAnchor: 904, 284
+01:19.56 Scanning for items
+01:19.56 ore_iron absent
+01:19.58 ore_iron PRESENT
+01:20.02 Processing open: False
+01:20.04 Processing open: True
+01:20.12 OCInventory Timeout
+01:20.12 Inventory not found
+01:20.12 Removing ore_iron from ProcessingQueue
+01:20.12 Proceeding to next item
+01:23.02 Manually stopping ProcessSimple
+01:23.08 Fullscreen detected (1920x1080) - No Offsets
+01:23.08 Trying to open Warehouse
+01:23.10 StorageAnchor: not found
+01:23.11 Clicking Transport Button
+01:23.12 Clicking WarehouseButton
+01:23.19 OCInventory Timeout
+01:23.20 StorageAnchor: 904, 284
+01:23.20 Scanning for items
+01:23.20 ore_iron absent
+01:23.22 ore_iron PRESENT
+01:23.26 Processing open: False
+01:23.27 Processing open: True
+01:23.34 Manually stopping ProcessSimple
+01:23.34 Inventory not found
+01:23.34 Removing ore_iron from ProcessingQueue
+01:23.34 Proceeding to next item
+01:24.43 Fullscreen detected (1920x1080) - No Offsets
+01:24.43 Trying to open Warehouse
+01:24.45 StorageAnchor: 221, 171
+01:24.45 Escaping from Storage
+01:24.47 StorageAnchor: 222, 171
+01:24.47 Escaping from Storage
+01:24.50 StorageAnchor: not found
+01:24.51 Wrong NPC? Escape and turn
+01:24.55 StorageAnchor: not found
+01:24.55 Clicking Transport Button
+01:24.57 Clicking WarehouseButton
+01:24.58 Returning items to storage
+01:25.05 StorageAnchor: 904, 284
+01:25.05 Scanning for items
+01:25.05 ore_iron absent
+01:25.07 ore_iron PRESENT
+01:25.11 Processing open: False
+01:25.12 Processing open: True
+01:25.18 Manually stopping ProcessSimple
+01:25.19 Inventory not found
+01:25.19 Removing ore_iron from ProcessingQueue
+01:25.19 Proceeding to next item
+01:25.22 Pause
+15:54.55 Settings saved
+15:55.01 Fullscreen detected (1920x1080) - No Offsets
+15:55.01 Trying to open Warehouse
+15:55.03 StorageAnchor: not found
+15:55.04 Clicking Transport Button
+15:55.07 StorageAnchor: not found
+15:55.10 Wrong NPC? Escape and turn
+15:55.14 StorageAnchor: not found
+15:55.16 Wrong NPC? Escape and turn

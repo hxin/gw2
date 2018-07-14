@@ -326,10 +326,21 @@ function NodeManager()
     local self = myObject{}
     self.map_id = Map().getCurrentMapID()
     self.nodes = {}
-    self.IDENTIFIER = {mine='3FE04BBF',tree='408ED607',herb='3E24AAFC'}
+    self.IDENTIFIER = {mine_copper='3FE04BBF',tree='408ED607',mine_iron='401AE1BA',tree_ms='402527E3',mine_silver='3FA08378',mine_rich_iron_vein='3FB3623E'}
     
     function self.getNodesFromResourceNodeArray()
-        for i,nodeBaseAddressHex in pairs(self.getResourceNodeArray()) do
+         return self.getNodesFromNodeArray(self.getResourceNodeArray ())
+    end
+    
+    function self.getNodesFromAllNodeArray()
+        return self.getNodesFromNodeArray(self.getNodeArray ())
+    end
+    
+    function self.getNodesFromNodeArray(nodeAddressArray)
+        if(utilityTable().length(nodeAddressArray)==0) then return {} end
+        
+        local nodes = {}
+        for i,nodeBaseAddressHex in pairs(nodeAddressArray) do
             local nodeBaseAddress = Address(nodeBaseAddressHex)
             local x = Address( nodeBaseAddress.addOffset('30') ).getValueFloat()
             local y = Address( nodeBaseAddress.addOffset('34') ).getValueFloat()
@@ -338,13 +349,14 @@ function NodeManager()
 
             local nodetype=utilityTable().keyof(self.IDENTIFIER,nodeidentifier)
             
-            if nodetype == nil then notype = 'unknown' end
+            if nodetype == nil then nodetype = 'unknown' end
             
             local node = Node(x,y,z,nodetype,map,nodeidentifier) 
-            self.nodes[node.generateIDString()] = node
+            nodes[node.generateIDString()] = node
          end
-        return self.nodes
+        return nodes
     end
+    
     
     function self.getResourceNodeArray ()
          local size = readInteger('arr_size')
@@ -360,14 +372,27 @@ function NodeManager()
          return envList
     end
     
+    function self.getNodeArray ()
+         local size = readInteger('arr_size')
+         local envListAddress = toHex(getAddress('arr'))
+         local envList = {}
+
+         for i=1,size,1 do
+             local add = toHex(readInteger(addHex(envListAddress,toHex(4*i))))
+             envList[i]=toHex(readInteger(addHex(envListAddress,toHex(4*i))))
+         end
+         return envList
+    end
+    
     
     function self.isResourceNode(add)
          local keys ={}
-         keys[self.IDENTIFIER['mine']]=true
+         keys[self.IDENTIFIER['mine_copper']]=true
+         keys[self.IDENTIFIER['mine_iron']]=true
          keys[self.IDENTIFIER['tree']]=true
          --keys[IDENTIFIER['herb']]=true
-         check1=toHex(readInteger(addHex(add,'A0')))
-         return readFloat(add) == 1 and readFloat(addHex(add,'28'))==1 and readInteger(addHex(add,'AC'))==1 and keys[check1]
+         local check=utilityTable().hasValue(self.IDENTIFIER, toHex(readInteger(addHex(add,'A0'))) )
+         return readFloat(add) == 1 and readFloat(addHex(add,'28'))==1 and readInteger(addHex(add,'AC'))==1 and check
     end
     
     return self
@@ -390,6 +415,12 @@ function utilityTable()
             if v == value then return k end
         end
         return nil
+    end
+    
+    function self.hasValue(t,value)
+        local flag = self.keyof(t,value)
+        if flag==nil then return false end
+        return true
     end
     
     function self.keys(t)
