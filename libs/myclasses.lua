@@ -27,7 +27,7 @@ function Map()
     end
 
     function self.readMapCordsByMapID(id, resource)
-        return self.readMapCordsByMapName(self.map_id2name[id], resource)
+        return self.readMapCordsByMapName(self.readMapID2Name()[id], resource)
     end
 
     function self.readCurrentMapCords()
@@ -40,12 +40,17 @@ function Map()
     end
 
     function self.getMapNodesByMapID(id, resource)
+        local map_name = self.readMapID2Name()[id]
+        return self.getMapNodesByMapName(map_name,resource)
+    end
+    
+    function self.getMapNodesByMapName(map_name, resource)
         --load Cords for the map
-        for k, v in pairs(self.readMapCordsByMapID(id, resource)) do
-            if v['pos'] then
+        for k, v in pairs(self.readMapCordsByMapName(map_name, resource)) do
+            if v['nodetype'] == nil then
                 self.nodes[k] = Node(v['x'], v['y'], v['z'], k, v['map'], '')
             else
-                self.nodes[k] = Node(v['x'], v['y'], v['z'], v['type'], v['map'], v['meta'])
+                self.nodes[k] = Node(v['x'], v['y'], v['z'], v['nodetype'], v['map'], v['meta'])
             end
         end
         return self.nodes
@@ -58,8 +63,16 @@ function Map()
 
     function self.saveResNodesToMapFile(nodes)
         local map_name = self.readMapID2Name()[self.getCurrentMapID()]
-        utilityFile().saveINI('locations/' .. map_name .. '_resource.ini', nodes)
+        local newNodes_simple={}
+        for k, v in pairs(nodes) do
+            if v.getNodeType()~='unknown' then 
+              newNodes_simple[k] = Node().toNodeForSaving(v) 
+            end
+        end
+        utilityFile().saveINI('locations/' .. map_name .. '_resource.ini', newNodes_simple)
     end
+    
+    
 
     self.map_id2name = self.readMapID2Name()
     self.current_map_id = self.getCurrentMapID()
@@ -330,7 +343,6 @@ function NodeManager()
     local self = myObject {}
     self.map_id = Map().getCurrentMapID()
     self.nodes = {}
-    self.IDENTIFIER = utilityFile().readINI('data.ini')['id']
 
     function self.getNodesFromResourceNodeArray()
         return self.getNodesFromNodeArray(self.getResourceNodeArray())
@@ -351,7 +363,7 @@ function NodeManager()
             local z = Address(nodeBaseAddress.addOffset('38')).getValueFloat()
             local nodeidentifier = Address(nodeBaseAddress.addOffset('A0')).getValueHex()
 
-            local nodetype = utilityTable().keyof(self.IDENTIFIER, nodeidentifier)
+            local nodetype = utilityTable().keyof(self.getResIdentifier(), nodeidentifier)
 
             if nodetype == nil then nodetype = 'unknown' end
 
@@ -391,12 +403,17 @@ function NodeManager()
 
     function self.isResourceNode(add)
         local keys = {}
-        keys[self.IDENTIFIER['mine_copper']] = true
-        keys[self.IDENTIFIER['mine_iron']] = true
-        keys[self.IDENTIFIER['tree']] = true
-        --keys[IDENTIFIER['herb']]=true
-        local check = utilityTable().hasValue(self.IDENTIFIER, toHex(readInteger(addHex(add, 'A0'))))
+        local check = utilityTable().hasValue(self.getResIdentifier(), toHex(readInteger(addHex(add, 'A0'))))
         return readFloat(add) == 1 and readFloat(addHex(add, '28')) == 1 and readInteger(addHex(add, 'AC')) == 1 and check
+    end
+    
+    function self.getResIdentifier()
+        local id = utilityFile().readINI('data/Node.ini')['id']
+        local id_hex={}
+        for k,v in pairs(id) do
+            id_hex[k] = toHex(v)
+        end
+        return id_hex
     end
 
     return self
@@ -456,7 +473,7 @@ function utilityTable()
         table.sort(keys)
         return keys
     end
-
+    
 
     return self
 end

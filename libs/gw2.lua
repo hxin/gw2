@@ -30,11 +30,7 @@ end
 function addNodesToMapFile()
     local nodes = Map().getCurrentMapNodes(true)
     local newNodes = NodeManager().getNodesFromResourceNodeArray()
-    local newNodes_simply = {}
-    for k, v in pairs(newNodes) do
-        newNodes_simply[k] = Node().toNodeForSaving(v)
-    end
-    Map().saveResNodesToMapFile(utilityTable().merge(nodes, newNodes_simply))
+    Map().saveResNodesToMapFile(utilityTable().merge(nodes, newNodes))
 end
 
 function moveToNextNode()
@@ -125,8 +121,29 @@ function updateNearNodesView()
 end
 
 
+function updateAnyMapNodesList(map_name)
+          local lv = GW2.CEListView_anymap_nodes
+          listview_clear(lv)
+
+          local items = lv.items
+          items.clear()
+          
+          local nodes = Map().getMapNodesByMapName(map_name)
+          local keys =utilityTable().sortedKeys(nodes)
+          
+          for _, k in ipairs(keys) do
+              n = nodes[k]
+              local item = items:add()
+              item.Caption = k
+              local row_subitems = listitem_getSubItems(item) --returns a Strings object
+              strings_add(row_subitems, n.toString())
+          end
+end
+
+
 ----------------------
 function CEToggleBox_activateChange(sender)
+    addressList.getMemoryRecordByDescription('findResourceNode').Active=true
     if (PlayerStatUpdateTimer == nil) then --first time init
         PlayerStatUpdateTimer = createTimer(nil, false)
 
@@ -146,6 +163,7 @@ function CEButton_listCurrentMapNodesClick(sender)
 end
 
 function CEButton_listCurrentMapResNodesClick(sender)
+    addressList.getMemoryRecordByDescription('findResourceNode').Active=true
     updateListViewNodesFromMap(true)
 end
 
@@ -182,5 +200,41 @@ function CEToggleBox_activate2Click(sender)
         NearNodesUpdateTimer.destroy()
         NearNodesUpdateTimer = nil
     end
+end
+
+
+function CEComboBox_map_selectionChange(sender)
+         local cb = GW2.CEComboBox_map_selection
+         local selected = cb.getItemIndex() + 1
+         local map_id2name = Map().readMapID2Name()
+         local keys = utilityTable().keys(map_id2name)
+         updateAnyMapNodesList(map_id2name[keys[selected]])
+end
+
+function initComboBox_map_selection()
+          local cb = GW2.CEComboBox_map_selection
+          local map_id2name = Map().readMapID2Name()
+          cb.clear()
+          for k,v in pairs(map_id2name) do
+              cb.items.add(v)
+          end
+end
+
+
+function CEListView_anymap_nodesClick(sender)
+         local lv = GW2.CEListView_anymap_nodes
+         local itemSelected = lv.getItemIndex()
+         local item = lv.Items[itemSelected]
+
+
+         local cb = GW2.CEComboBox_map_selection
+         local selected = cb.getItemIndex() + 1
+         local map_id2name = Map().readMapID2Name()
+         local keys = utilityTable().keys(map_id2name)
+         local map_name = map_id2name[keys[selected]]
+         local nodes = Map().getMapNodesByMapName(map_name)
+
+         local node = nodes[item.Caption]
+         if not isEmpty(node) then Player().move(node.getX(), node.getY(), node.getZ()) end
 end
 
