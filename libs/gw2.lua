@@ -108,16 +108,21 @@ function updateNearNodesView()
     items.clear()
 
     local nodes = NodeManager().getNodesFromAllNodeArray()
-
-    keys = utilityTable().sortedKeys(nodes)
+    
+    Map().saveAllNodesToMapFile(nodes)
+    
+    --local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'meta')
+    local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'identifier')
     for _, k in ipairs(keys) do
         n = nodes[k]
         local item = items:add()
         item.Caption = k
         local row_subitems = listitem_getSubItems(item) --returns a Strings object
         strings_add(row_subitems, n.toString())
+        strings_add(row_subitems, n.getIdentifier())
         strings_add(row_subitems, n.getMeta())
     end
+    
 end
 
 

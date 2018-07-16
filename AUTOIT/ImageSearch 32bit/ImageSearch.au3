@@ -1,3 +1,12 @@
+#include-once
+; ------------------------------------------------------------------------------
+;
+; AutoIt Version: 3.0
+; Language:       English
+; Description:    Functions that assist with Image Search
+;                 Require that the ImageSearchDLL.dll be loadable
+;
+; ------------------------------------------------------------------------------
 
 ;===============================================================================
 ;
@@ -18,27 +27,25 @@
 ;       a desktop region to search
 ;
 ;===============================================================================
-Func _ImageSearch($findImage,$resultPosition,ByRef $x, ByRef $y,$tolerance)
-   return _ImageSearchArea($findImage,$resultPosition,0,0,@DesktopWidth,@DesktopHeight,$x,$y,$tolerance)
-   ;return _ImageSearchArea($findImage,$resultPosition,0,0,1400,960,$x,$y,$tolerance)
+Func _ImageSearch($findImage,$resultPosition,ByRef $x, ByRef $y,$tolerance, $HBMP=0)
+   return _ImageSearchArea($findImage,$resultPosition,0,0,@DesktopWidth,@DesktopHeight,$x,$y,$tolerance,$HBMP)
 EndFunc
 
-Func _ImageSearchInGame($findImage,$resultPosition,ByRef $x, ByRef $y,$tolerance)
-   return _ImageSearchArea($findImage, $resultPosition,$gameWindowSize_x,$gameWindowSize_y, $gameWindowSize_right, $gameWindowSize_bottom, $x, $y, $tolerance)
-EndFunc
+Func _ImageSearchArea($findImage,$resultPosition,$x1,$y1,$right,$bottom,ByRef $x, ByRef $y, $tolerance,$HBMP=0)
+	;MsgBox(0,"asd","" & $x1 & " " & $y1 & " " & $right & " " & $bottom)
+	if $tolerance>0 then $findImage = "*" & $tolerance & " " & $findImage
+If IsString($findImage) Then
+	$result = DllCall("ImageSearchDLL.dll","str","ImageSearch","int",$x1,"int",$y1,"int",$right,"int",$bottom,"str",$findImage,"ptr",$HBMP)
+Else
+	$result = DllCall("ImageSearchDLL.dll","str","ImageSearch","int",$x1,"int",$y1,"int",$right,"int",$bottom,"ptr",$findImage,"ptr",$HBMP)
+EndIf
 
-
-Func _ImageSearchArea($findImage,$resultPosition,$x1,$y1,$right,$bottom,ByRef $x, ByRef $y, $tolerance)
-    ;MsgBox(0,"asd","" & $x1 & " " & $y1 & " " & $right & " " & $bottom)
-    if $tolerance>0 then $findImage = "*" & $tolerance & " " & $findImage
-    $result = DllCall("ImageSearchDLL.dll","str","ImageSearch","int",$x1,"int",$y1,"int",$right,"int",$bottom,"str",$findImage)
-
-    ; If error exit
+	; If error exit
     if $result[0]="0" then return 0
 
-    ; Otherwise get the x,y location of the match and the size of the image to
-    ; compute the centre of search
-    $array = StringSplit($result[0],"|")
+	; Otherwise get the x,y location of the match and the size of the image to
+	; compute the centre of search
+	$array = StringSplit($result[0],"|")
 
    $x=Int(Number($array[2]))
    $y=Int(Number($array[3]))
@@ -55,7 +62,7 @@ EndFunc
 ;
 ; Syntax:           _WaitForImageSearch, _WaitForImagesSearch
 ; Parameter(s):
-;                   $waitSecs  - seconds to try and find the image
+;					$waitSecs  - seconds to try and find the image
 ;                   $findImage - the image to locate on the desktop
 ;                   $tolerance - 0 for no tolerance (0-255). Needed when colors of
 ;                                image differ from desktop. e.g GIF
@@ -68,17 +75,17 @@ EndFunc
 ;
 ;
 ;===============================================================================
-Func _WaitForImageSearch($findImage,$waitSecs,$resultPosition,ByRef $x, ByRef $y,$tolerance)
-    $waitSecs = $waitSecs * 1000
-    $startTime=TimerInit()
-    While TimerDiff($startTime) < $waitSecs
-        sleep(100)
-        $result=_ImageSearch($findImage,$resultPosition,$x, $y,$tolerance)
-        if $result > 0 Then
-            return 1
-        EndIf
-    WEnd
-    return 0
+Func _WaitForImageSearch($findImage,$waitSecs,$resultPosition,ByRef $x, ByRef $y,$tolerance,$HBMP=0)
+	$waitSecs = $waitSecs * 1000
+	$startTime=TimerInit()
+	While TimerDiff($startTime) < $waitSecs
+		sleep(100)
+		$result=_ImageSearch($findImage,$resultPosition,$x, $y,$tolerance,$HBMP)
+		if $result > 0 Then
+			return 1
+		EndIf
+	WEnd
+	return 0
 EndFunc
 
 ;===============================================================================
@@ -88,10 +95,10 @@ EndFunc
 ;
 ; Syntax:           _WaitForImagesSearch
 ; Parameter(s):
-;                   $waitSecs  - seconds to try and find the image
+;					$waitSecs  - seconds to try and find the image
 ;                   $findImage - the ARRAY of images to locate on the desktop
 ;                              - ARRAY[0] is set to the number of images to loop through
-;                                ARRAY[1] is the first image
+;								 ARRAY[1] is the first image
 ;                   $tolerance - 0 for no tolerance (0-255). Needed when colors of
 ;                                image differ from desktop. e.g GIF
 ;                   $resultPosition - Set where the returned x,y location of the image is.
@@ -103,17 +110,18 @@ EndFunc
 ;
 ;
 ;===============================================================================
-Func _WaitForImagesSearch($findImage,$waitSecs,$resultPosition,ByRef $x, ByRef $y,$tolerance)
-    $waitSecs = $waitSecs * 1000
-    $startTime=TimerInit()
-    While TimerDiff($startTime) < $waitSecs
-        for $i = 1 to $findImage[0]
-            sleep(50)
-            $result=_ImageSearch($findImage[$i],$resultPosition,$x, $y,$tolerance)
-            if $result > 0 Then
-                return $i
-            EndIf
-        Next
-    WEnd
-    return 0
+Func _WaitForImagesSearch($findImage,$waitSecs,$resultPosition,ByRef $x, ByRef $y,$tolerance,$HBMP=0)
+	$waitSecs = $waitSecs * 1000
+	$startTime=TimerInit()
+	While TimerDiff($startTime) < $waitSecs
+		for $i = 1 to $findImage[0]
+		    sleep(100)
+		    $result=_ImageSearch($findImage[$i],$resultPosition,$x, $y,$tolerance,$HBMP)
+		    if $result > 0 Then
+			    return $i
+		    EndIf
+		Next
+	WEnd
+	return 0
 EndFunc
+

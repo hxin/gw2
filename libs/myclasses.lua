@@ -48,9 +48,9 @@ function Map()
         --load Cords for the map
         for k, v in pairs(self.readMapCordsByMapName(map_name, resource)) do
             if v['nodetype'] == nil then
-                self.nodes[k] = Node(v['x'], v['y'], v['z'], k, v['map'], '')
+                self.nodes[k] = Node(v['x'], v['y'], v['z'], k, v['map'], '', ' ')
             else
-                self.nodes[k] = Node(v['x'], v['y'], v['z'], v['nodetype'], v['map'], v['meta'])
+                self.nodes[k] = Node(v['x'], v['y'], v['z'], v['nodetype'], v['map'], v['meta'], v['identifier'])
             end
         end
         return self.nodes
@@ -60,16 +60,32 @@ function Map()
         --load Cords for the map
         return self.getMapNodesByMapID(self.current_map_id, resource)
     end
+    
+    function self.saveNodesToMapFile(nodes,filename)
+        local newNodes_simple = {}
+        for k, v in pairs(nodes) do
+            newNodes_simple[k] = Node().toNodeForSaving(v)
+        end
+        utilityFile().saveINI(filename, newNodes_simple)
+    end
+    
 
     function self.saveResNodesToMapFile(nodes)
         local map_name = self.readMapID2Name()[self.getCurrentMapID()]
-        local newNodes_simple = {}
+        local resnodes = {}
         for k, v in pairs(nodes) do
             if v.getNodeType() ~= 'unknown' then
-                newNodes_simple[k] = Node().toNodeForSaving(v)
+                resnodes[k] = v
             end
         end
-        utilityFile().saveINI('locations/' .. map_name .. '_resource.ini', newNodes_simple)
+        local filename = 'locations/' .. map_name .. '_resource.ini'
+        self.saveNodesToMapFile(resnodes,filename)
+    end
+    
+    function self.saveAllNodesToMapFile(nodes)
+        local map_name = self.readMapID2Name()[self.getCurrentMapID()]
+        local filename = 'locations/' .. map_name .. '_all.ini'
+        self.saveNodesToMapFile(nodes,filename)
     end
 
 
@@ -84,7 +100,9 @@ function Map()
 end
 
 
-function Node(x, y, z, nodetype, map, meta)
+function Node(x, y, z, nodetype, map, meta, identifier)
+    if isEmpty(identifier) then identifier = '' end
+    
     local self = myObject {}
 
     self.x = x
@@ -93,6 +111,7 @@ function Node(x, y, z, nodetype, map, meta)
     self.nodetype = nodetype
     self.map = map
     self.meta = meta
+    self.identifier = identifier
 
     function self.getX()
         return self.x
@@ -113,6 +132,14 @@ function Node(x, y, z, nodetype, map, meta)
     function self.getMeta()
         return self.meta
     end
+    
+    function self.getIdentifier()
+        return self.identifier
+    end
+    
+    function self.getMetaAsTable()
+        return split(self.getMeta(),' ')
+    end
 
     function self.getNodeType()
         return self.nodetype
@@ -128,7 +155,7 @@ function Node(x, y, z, nodetype, map, meta)
     end
 
     function self.toNodeForSaving(node)
-        return { x = node.getX(), y = node.getY(), z = node.getZ(), nodetype = node.getNodeType(), map = node.getMap(), meta = node.getMeta() }
+        return { x = node.getX(), y = node.getY(), z = node.getZ(), nodetype = node.getNodeType(), map = node.getMap(), meta = node.getMeta(), identifier = node.getIdentifier()}
     end
 
     local TYPES = {
@@ -192,6 +219,16 @@ function Address(hex)
 
     function self.addOffset(offsetHex)
         return addHex(self.hex, offsetHex)
+    end
+    
+    function self.recordValueToOffset(offsetHex)
+        local offsetNumber = toNumber(offsetHex)
+        local hex_signature = ''
+        for i=0,offsetNumber,4 do
+          local hex = Address(self.addOffset(toHex(i))).getValueHex()
+          hex_signature = hex_signature ..toHex(i)..' '..hex..' '
+        end
+        return hex_signature
     end
 
 
@@ -366,8 +403,12 @@ function NodeManager()
             local nodetype = utilityTable().keyof(self.getResIdentifier(), nodeidentifier)
 
             if nodetype == nil then nodetype = 'unknown' end
+            
+            
+            
+            local meta_string = nodeBaseAddress.recordValueToOffset('230')
 
-            local node = Node(x, y, z, nodetype, self.map_id, nodeidentifier)
+            local node = Node(x, y, z, nodetype, self.map_id, meta_string..' base '..nodeBaseAddressHex, nodeidentifier)
             nodes[node.generateIDString()] = node
         end
         return nodes
@@ -472,6 +513,47 @@ function utilityTable()
         local keys = self.keys(t)
         table.sort(keys)
         return keys
+    end
+    
+     function self.sortedKeysByValueTableIndex(t,index)
+        --local values = self.values(t)
+
+        local valueToBeSort = {}
+
+        for k,v in pairs(t) do
+           valueToBeSort[k] =v[index]
+        end
+
+        local sortedkeys = self.sortedKeyByValue(valueToBeSort)
+
+        return sortedkeys
+    end
+
+
+    function self.sortedKeyByValue(t)
+        local valueToBeSort={}
+
+        for k,v in pairs(t) do
+           valueToBeSort[v] = k
+        end
+
+        local values = self.keys(valueToBeSort)
+        table.sort(values)
+
+        local sortedkeys = {}
+
+        for k,v in pairs(values) do
+            table.insert(sortedkeys,valueToBeSort[v])
+        end
+        return sortedkeys
+    end
+    
+    function self.concat(t,spe1,spe2)
+       local tstring =''
+       for k,v in pairs(t) do
+          tstring = k..spe1..value..spe2
+       end
+       return tstring
     end
 
 

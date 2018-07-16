@@ -1,8 +1,9 @@
 #include <AutoItConstants.au3>
-HotKeySet("^{F1}", "Terminate")
-HotKeySet("{`}", "TogglePause")
+HotKeySet("^{F4}", "Terminate")
+HotKeySet("{F5}", "TogglePause")
 
 Global $Paused=True;
+
 ToolTip('Paused...',0,0)
 $driftDelay = 20;
 $driftLength = 600;
@@ -12,8 +13,8 @@ Exit 0
 EndFunc
 
 
-if winexists("BLACK DESERT - 253268") Then
-    winactivate("BLACK DESERT - 253268")
+if winexists("Guild Wars 2") Then
+    winactivate("Guild Wars 2")
 EndIf
 
 Sleep (1500)
