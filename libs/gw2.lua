@@ -109,7 +109,7 @@ function updateNearNodesView()
 
     local nodes = NodeManager().getNodesFromAllNodeArray()
     
-    Map().saveAllNodesToMapFile(nodes)
+   --Map().saveAllNodesToMapFile(nodes)
     
     --local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'meta')
     local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'identifier')

@@ -89,7 +89,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>35</ID>
           <Description>"X"</Description>
-          <LastState Value="-177.7620087" RealAddress="572EC4A0"/>
+          <LastState Value="407.283905" RealAddress="9B9AEBB0"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+98</Address>
           <Offsets>
@@ -119,7 +119,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>36</ID>
           <Description>"Y"</Description>
-          <LastState Value="-231.1485443" RealAddress="572EC4A4"/>
+          <LastState Value="-710.2191772" RealAddress="9B9AEBB4"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+98</Address>
           <Offsets>
@@ -149,7 +149,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>37</ID>
           <Description>"Z"</Description>
-          <LastState Value="-37.81034851" RealAddress="572EC4A8"/>
+          <LastState Value="46.50891113" RealAddress="9B9AEBB8"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+98</Address>
           <Offsets>
@@ -187,14 +187,14 @@ dealloc(newmem)
         <CheatEntry>
           <ID>114</ID>
           <Description>"grv"</Description>
-          <LastState Value="-40.625" RealAddress="9C8851A4"/>
+          <LastState Value="-40.625" RealAddress="1A4CF104"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+1C4</Address>
         </CheatEntry>
         <CheatEntry>
           <ID>9</ID>
           <Description>"speed"</Description>
-          <LastState Value="9.1875" RealAddress="9C8851C4"/>
+          <LastState Value="9.1875" RealAddress="1A4CF124"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+1E4</Address>
           <CheatEntries>
@@ -304,7 +304,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>100</ID>
           <Description>"map_id"</Description>
-          <LastState Value="17" RealAddress="02A626EC"/>
+          <LastState Value="21" RealAddress="02A626EC"/>
           <VariableType>4 Bytes</VariableType>
           <Address>[mapIDBase] + 24</Address>
         </CheatEntry>
@@ -420,6 +420,129 @@ dealloc(newmem)
 }
 </AssemblerScript>
     </CheatEntry>
+    <CheatEntry>
+      <ID>115</ID>
+      <Description>"Float"</Description>
+      <LastState Value="259.6353149" RealAddress="72E5A0C0"/>
+      <VariableType>Float</VariableType>
+      <Address>72E5A0C0</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>116</ID>
+      <Description>"Float"</Description>
+      <LastState Value="259.6353149" RealAddress="72E5A0D0"/>
+      <VariableType>Float</VariableType>
+      <Address>72E5A0D0</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>117</ID>
+      <Description>"Float"</Description>
+      <LastState Value="259.6353149" RealAddress="72E5A0E0"/>
+      <VariableType>Float</VariableType>
+      <Address>72E5A0E0</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>118</ID>
+      <Description>"findNodes"</Description>
+      <LastState/>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{ Game   : Gw2.exe
+  Version: 
+  Date   : 2018-07-16
+  Author : Xin
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscanmodule(injNodePointer,Gw2.exe,0F 28 86 30 01 00 00 8D) // should be unique
+alloc(newmem,$50)
+
+alloc(nbarr_size,4) //reserves memory for the size of the array
+alloc(nbarr,$4000) //reserves lots of memory for the array
+globalalloc(nbarr_size,4) //reserves memory for the size of the array
+globalalloc(nbarr,$4000) //reserves lots of memory for the array
+
+alloc(parseArray,$50)
+
+label(code)
+label(return)
+
+parseArray:
+  pushad
+  mov ebx,[nbarr_size]
+  xor ecx,ecx //zeros out the counter
+  @@: //generic label
+  cmp [nbarr+ecx*4],esi //searching the array one slot at a time to see if eax exists
+  je @f //if eax exists, we dont want to do something to the array, jump forward to first symbol
+  add ecx,1 //increment the counter so the compare is on next slot
+  cmp ecx,ebx //check if array bounds exeeded
+  jbe @b //if not exceeded jump back to the above generic label
+  @@: //new generic label
+  popad
+  ret
+
+newmem:
+  call parseArray //runs the above code,
+  je code //runs the original code
+  pushad
+  mov ebx,[nbarr_size]
+  add ebx,1
+  mov [nbarr_size],ebx //increments the size of the array
+  mov [nbarr+ebx*4],esi //Store new address at the end of the array
+  popad
+
+code:
+  movaps xmm0,[esi+00000130]
+  jmp return
+
+injNodePointer:
+  jmp newmem
+  nop
+  nop
+return:
+registersymbol(injNodePointer)
+registersymbol(nbarr_size)
+registersymbol(nbarr)
+
+[DISABLE]
+
+injNodePointer:
+  db 0F 28 86 30 01 00 00
+
+unregistersymbol(injNodePointer)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: "Gw2.exe"+CEF746
+
+"Gw2.exe"+CEF726: 83 EC 58              -  sub esp,58
+"Gw2.exe"+CEF729: A1 B4 EB 67 02        -  mov eax,[Gw2.exe+153EBB4]
+"Gw2.exe"+CEF72E: 33 C5                 -  xor eax,ebp
+"Gw2.exe"+CEF730: 89 45 FC              -  mov [ebp-04],eax
+"Gw2.exe"+CEF733: 8B 89 A0 01 00 00     -  mov ecx,[ecx+000001A0]
+"Gw2.exe"+CEF739: 56                    -  push esi
+"Gw2.exe"+CEF73A: 8B 73 08              -  mov esi,[ebx+08]
+"Gw2.exe"+CEF73D: 57                    -  push edi
+"Gw2.exe"+CEF73E: 8B 7B 0C              -  mov edi,[ebx+0C]
+"Gw2.exe"+CEF741: E8 5A 97 28 00        -  call Gw2.exe+F78EA0
+// ---------- INJECTING HERE ----------
+"Gw2.exe"+CEF746: 0F 28 86 30 01 00 00  -  movaps xmm0,[esi+00000130]
+// ---------- DONE INJECTING  ----------
+"Gw2.exe"+CEF74D: 8D 86 70 01 00 00     -  lea eax,[esi+00000170]
+"Gw2.exe"+CEF753: 0F 28 8E 40 01 00 00  -  movaps xmm1,[esi+00000140]
+"Gw2.exe"+CEF75A: 8D 4D D0              -  lea ecx,[ebp-30]
+"Gw2.exe"+CEF75D: 0F 28 9E 60 01 00 00  -  movaps xmm3,[esi+00000160]
+"Gw2.exe"+CEF764: 0F C6 C0 FF           -  shufps xmm0,xmm0-01
+"Gw2.exe"+CEF768: D9 5D CC              -  fstp dword ptr [ebp-34]
+"Gw2.exe"+CEF76B: F3 0F 10 65 CC        -  movss xmm4,[ebp-34]
+"Gw2.exe"+CEF770: 0F C6 C9 FF           -  shufps xmm1,xmm1-01
+"Gw2.exe"+CEF774: 0F C6 E4 00           -  shufps xmm4,xmm400
+"Gw2.exe"+CEF778: 0F 5C E0              -  subps xmm4,xmm0
+}
+</AssemblerScript>
+    </CheatEntry>
   </CheatEntries>
   <CheatCodes>
     <CodeEntry>
@@ -506,7 +629,16 @@ dealloc(newmem)
       </After>
     </CodeEntry>
   </CheatCodes>
-  <UserdefinedSymbols/>
+  <UserdefinedSymbols>
+    <SymbolEntry>
+      <Name>nbarr_size</Name>
+      <Address>3F054000</Address>
+    </SymbolEntry>
+    <SymbolEntry>
+      <Name>nbarr</Name>
+      <Address>3F054010</Address>
+    </SymbolEntry>
+  </UserdefinedSymbols>
   <Structures StructVersion="2">
     <Structure Name="unnamed structure" AutoFill="0" AutoCreate="1" DefaultHex="0" AutoDestroy="0" DoNotSaveLocal="0" RLECompression="1" AutoCreateStructsize="4096">
       <Elements/>
@@ -1504,20 +1636,19 @@ dealloc(newmem)
     </Structure>
     <Structure Name="FLOAT" AutoFill="0" AutoCreate="1" DefaultHex="0" AutoDestroy="0" DoNotSaveLocal="0" RLECompression="1" AutoCreateStructsize="4096">
       <Elements>
-        <Element Offset="0" Vartype="4 Bytes" Bytesize="4" RLECount="5" DisplayMethod="Hexadecimal"/>
-        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" RLECount="6" DisplayMethod="Hexadecimal"/>
-        <Element Offset="48" Vartype="Float" Bytesize="4" RLECount="6" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="72" Vartype="Float" Bytesize="4" DisplayMethod="Hexadecimal"/>
-        <Element Offset="76" Vartype="Float" Bytesize="4" RLECount="21" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="160" Vartype="4 Bytes" Bytesize="4" RLECount="4" DisplayMethod="Hexadecimal"/>
-        <Element Offset="176" Vartype="4 Bytes" Bytesize="4" RLECount="23" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="0" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>
+        <Element Offset="4" Vartype="4 Bytes" Bytesize="4" RLECount="4" DisplayMethod="Hexadecimal"/>
+        <Element Offset="24" Vartype="4 Bytes" Bytesize="4" RLECount="58" DisplayMethod="Hexadecimal"/>
+        <Element Offset="256" Vartype="4 Bytes" Bytesize="4" RLECount="3" DisplayMethod="Unsigned Integer"/>
         <Element Offset="268" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>
         <Element Offset="272" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Unsigned Integer"/>
-        <Element Offset="276" Vartype="4 Bytes" Bytesize="4" RLECount="6" DisplayMethod="Hexadecimal"/>
-        <Element Offset="297" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>
-        <Element Offset="298" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>
-        <Element Offset="299" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>
-        <Element Offset="300" Vartype="4 Bytes" Bytesize="4" RLECount="32" DisplayMethod="Hexadecimal"/>
+        <Element Offset="276" Vartype="4 Bytes" Bytesize="4" RLECount="3" DisplayMethod="Hexadecimal"/>
+        <Element Offset="288" Vartype="Float" Bytesize="4" RLECount="3" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="297" Vartype="Float" Bytesize="4" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="298" Vartype="Float" Bytesize="4" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="299" Vartype="Float" Bytesize="4" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="300" Vartype="Float" Bytesize="4" RLECount="21" DisplayMethod="Unsigned Integer"/>
+        <Element Offset="384" Vartype="4 Bytes" Bytesize="4" RLECount="11" DisplayMethod="Hexadecimal"/>
         <Element Offset="425" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>
         <Element Offset="430" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>
         <Element Offset="431" Vartype="4 Bytes" Bytesize="4" DisplayMethod="Hexadecimal"/>

@@ -408,11 +408,37 @@ function NodeManager()
             
             local meta_string = nodeBaseAddress.recordValueToOffset('230')
 
-            local node = Node(x, y, z, nodetype, self.map_id, meta_string..' base '..nodeBaseAddressHex, nodeidentifier)
+            local node = Node(x, y, z, nodetype, self.map_id, nodeBaseAddressHex..' '..meta_string, nodeidentifier)
             nodes[node.generateIDString()] = node
         end
         return nodes
     end
+    
+--    function self.getNodesFromNodeArray(nodeAddressArray)
+--        if (utilityTable().length(nodeAddressArray) == 0) then return {} end
+
+--        local nodes = {}
+--        for i, nodeBaseAddressHex in pairs(nodeAddressArray) do
+--            local nodeBaseAddress = Address(nodeBaseAddressHex)
+--            local x = Address(nodeBaseAddress.addOffset('30')).getValueFloat()
+--            local y = Address(nodeBaseAddress.addOffset('34')).getValueFloat()
+--            local z = Address(nodeBaseAddress.addOffset('38')).getValueFloat()
+--            local nodeidentifier = Address(nodeBaseAddress.addOffset('A0')).getValueHex()
+
+--            local nodetype = utilityTable().keyof(self.getResIdentifier(), nodeidentifier)
+
+--            if nodetype == nil then nodetype = 'unknown' end
+            
+            
+            
+--            local meta_string = nodeBaseAddress.recordValueToOffset('230')
+
+--            local node = Node(x, y, z, nodetype, self.map_id, nodeBaseAddressHex..' '..meta_string, nodeidentifier)
+--            nodes[node.generateIDString()] = node
+--        end
+--        return nodes
+--    end
+    
 
 
     function self.getResourceNodeArray()
@@ -445,7 +471,8 @@ function NodeManager()
     function self.isResourceNode(add)
         local keys = {}
         local check = utilityTable().hasValue(self.getResIdentifier(), toHex(readInteger(addHex(add, 'A0'))))
-        return readFloat(add) == 1 and readFloat(addHex(add, '28')) == 1 and readInteger(addHex(add, 'AC')) == 1 and check
+        --return readFloat(add) == 1 and readFloat(addHex(add, '28')) == 1 and readInteger(addHex(add, 'AC')) == 1 and check
+        return check
     end
 
     function self.getResIdentifier()
@@ -534,17 +561,21 @@ function utilityTable()
         local valueToBeSort={}
 
         for k,v in pairs(t) do
-           valueToBeSort[v] = k
+           if valueToBeSort[v]==nil then valueToBeSort[v]={} end
+           table.insert(valueToBeSort[v],k)
         end
 
         local values = self.keys(valueToBeSort)
         table.sort(values)
-
+        
         local sortedkeys = {}
 
         for k,v in pairs(values) do
-            table.insert(sortedkeys,valueToBeSort[v])
+            for k1,v1 in pairs(valueToBeSort[v]) do
+              table.insert(sortedkeys,v1)
+            end
         end
+
         return sortedkeys
     end
     
