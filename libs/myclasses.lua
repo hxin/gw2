@@ -395,10 +395,10 @@ function NodeManager()
         local nodes = {}
         for i, nodeBaseAddressHex in pairs(nodeAddressArray) do
             local nodeBaseAddress = Address(nodeBaseAddressHex)
-            local x = Address(nodeBaseAddress.addOffset('30')).getValueFloat()
-            local y = Address(nodeBaseAddress.addOffset('34')).getValueFloat()
-            local z = Address(nodeBaseAddress.addOffset('38')).getValueFloat()
-            local nodeidentifier = Address(nodeBaseAddress.addOffset('A0')).getValueHex()
+            local x = Address(nodeBaseAddress.addOffset('130')).getValueFloat()
+            local y = Address(nodeBaseAddress.addOffset('134')).getValueFloat()
+            local z = Address(nodeBaseAddress.addOffset('138')).getValueFloat()
+            local nodeidentifier = Address(nodeBaseAddress.addOffset('190')).getValueHex()
 
             local nodetype = utilityTable().keyof(self.getResIdentifier(), nodeidentifier)
 
@@ -406,7 +406,7 @@ function NodeManager()
             
             
             
-            local meta_string = nodeBaseAddress.recordValueToOffset('230')
+            local meta_string = nodeBaseAddress.recordValueToOffset('320')
 
             local node = Node(x, y, z, nodetype, self.map_id, nodeBaseAddressHex..' '..meta_string, nodeidentifier)
             nodes[node.generateIDString()] = node
@@ -439,11 +439,9 @@ function NodeManager()
 --        return nodes
 --    end
     
-
-
     function self.getResourceNodeArray()
-        local size = readInteger('arr_size')
-        local envListAddress = toHex(getAddress('arr'))
+        local size = readInteger('nbarr_size')
+        local envListAddress = toHex(getAddress('nbarr'))
         local envList = {}
 
         for i = 1, size, 1 do
@@ -455,9 +453,23 @@ function NodeManager()
         return envList
     end
 
+--    function self.getResourceNodeArray()
+--        local size = readInteger('arr_size')
+--        local envListAddress = toHex(getAddress('arr'))
+--        local envList = {}
+
+--        for i = 1, size, 1 do
+--            local add = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
+--            if self.isResourceNode(add) then
+--                envList[i] = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
+--            end
+--        end
+--        return envList
+--    end
+
     function self.getNodeArray()
-        local size = readInteger('arr_size')
-        local envListAddress = toHex(getAddress('arr'))
+        local size = readInteger('nbarr_size')
+        local envListAddress = toHex(getAddress('nbarr'))
         local envList = {}
 
         for i = 1, size, 1 do
@@ -466,11 +478,30 @@ function NodeManager()
         end
         return envList
     end
+    
+--    function self.getNodeArray()
+--        local size = readInteger('arr_size')
+--        local envListAddress = toHex(getAddress('arr'))
+--        local envList = {}
+
+--        for i = 1, size, 1 do
+--            local add = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
+--            envList[i] = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
+--        end
+--        return envList
+--    end
 
 
+--    function self.isResourceNode(add)
+--        local keys = {}
+--        local check = utilityTable().hasValue(self.getResIdentifier(), toHex(readInteger(addHex(add, 'A0'))))
+--        --return readFloat(add) == 1 and readFloat(addHex(add, '28')) == 1 and readInteger(addHex(add, 'AC')) == 1 and check
+--        return check
+--    end
+    
     function self.isResourceNode(add)
         local keys = {}
-        local check = utilityTable().hasValue(self.getResIdentifier(), toHex(readInteger(addHex(add, 'A0'))))
+        local check = utilityTable().hasValue(self.getResIdentifier(), toHex(readInteger(addHex(add, '190'))))
         --return readFloat(add) == 1 and readFloat(addHex(add, '28')) == 1 and readInteger(addHex(add, 'AC')) == 1 and check
         return check
     end

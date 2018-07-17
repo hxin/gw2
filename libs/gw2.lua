@@ -2,11 +2,14 @@ form_show(GW2)
 
 
 function updatePlayStat()
-    GW2.CELabel_cord.Caption = Player().getCord().toString()
-    GW2.CELabel_speed.Caption = Player().getSpeed()
-    GW2.CELabel_map_id.Caption = Map().getCurrentMapID()
-    addNodesToMapFile()
-end
+    
+   if addressList.getMemoryRecordByDescription('X').value ~= '??' then
+      GW2.CELabel_cord.Caption = Player().getCord().toString()
+      GW2.CELabel_speed.Caption = Player().getSpeed()
+      GW2.CELabel_map_id.Caption = Map().getCurrentMapID()
+      addNodesToMapFile()
+    end
+  end
 
 function updateListViewNodesFromMap(resource)
     local lv = GW2.CEListView_nodes
@@ -68,17 +71,18 @@ end
 
 function moveToNextResNode()
     if resNodeCounter == nil then resNodeCounter = 1 end
+    
     local nodes = Map().getCurrentMapNodes(true)
     local nodesvalues = utilityTable().values(nodes)
     local nodekeys = utilityTable().sortedKeys(nodes)
-
+    if resNodeCounter > utilityTable().length(nodekeys) then resNodeCounter = 1 end
     GW2.CELabel_currentNodeInfo.Caption = nodekeys[resNodeCounter]
     GW2.CELabel_node_counter.Caption = resNodeCounter
 
     Player().moveToNode(nodes[nodekeys[resNodeCounter]])
 
     resNodeCounter = resNodeCounter + 1
-    if resNodeCounter > utilityTable().length(nodekeys) then resNodeCounter = 1 end
+   
 end
 
 
@@ -134,6 +138,7 @@ function updateAnyMapNodesList(map_name)
     items.clear()
 
     local nodes = Map().getMapNodesByMapName(map_name)
+    
     local keys = utilityTable().sortedKeys(nodes)
 
     for _, k in ipairs(keys) do
@@ -160,6 +165,25 @@ function CEToggleBox_activateChange(sender)
         PlayerStatUpdateTimer.destroy()
         PlayerStatUpdateTimer = nil
     end
+    
+    if (nodesUpdateTimer == nil) then --first time init
+        nodesUpdateTimer = createTimer(nil, false)
+
+        timer_setInterval(nodesUpdateTimer, 10000) --set value every 100 milliseconds
+        timer_onTimer(nodesUpdateTimer, toggleFindNodes)
+        timer_setEnabled(nodesUpdateTimer, true)
+    else
+        timer_setEnabled(nodesUpdateTimer, false) --stop the freezer
+        nodesUpdateTimer.destroy()
+        nodesUpdateTimer = nil
+    end
+end
+
+function toggleFindNodes()
+      if addressList.getMemoryRecordByDescription('findResourceNode').Active == true then
+        addressList.getMemoryRecordByDescription('findResourceNode').Active = false
+        addressList.getMemoryRecordByDescription('findResourceNode').Active = true
+      end
 end
 
 
@@ -178,6 +202,7 @@ function CEListView_allNodesClick(sender)
     local item = lv.Items[itemSelected]
     local node = NodeManager().getNodesFromAllNodeArray()[item.Caption]
     if not isEmpty(node) then Player().move(node.getX(), node.getY(), node.getZ()) end
+    nodeCounter = itemSelected
 end
 
 
@@ -188,6 +213,7 @@ function CEListView_nodesClick(sender)
     local node = Map().getCurrentMapNodes()[item.Caption]
     if node == nil then node = Map().getCurrentMapNodes(true)[item.Caption] end
     Player().move(node.getX(), node.getY(), node.getZ())
+    nodeCounter = itemSelected
     --p(item.Caption)
     --p(item.SubItems[0])
     --p(item.SubItems[1])
