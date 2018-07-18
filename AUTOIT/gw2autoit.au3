@@ -26,7 +26,7 @@ EndIf
 ;MsgBox($MB_SYSTEMMODAL, "", $hWnd_ce)
 
 Global $x=0,$y=0,$missing_tool,$current_gather
-Global $counter=0,$max_count=100,$always_active=1
+Global $counter=0,$max_count=800,$always_active=1
 Global $gameWindowSize_x=WinGetPos($hWnd_gw2)[0],$gameWindowSize_y=WinGetPos($hWnd_gw2)[1],$gameWindowSize_right=WinGetPos($hWnd_gw2)[2],$gameWindowSize_bottom=WinGetPos($hWnd_gw2)[3]
 ;Global $wp_text_image = 'img/bc_deadend_wp.bmp',$wp_text="[&BAsEAAA=]"
 ;Global $wp_text_image = 'img/tf_talus_wp.bmp',$wp_text="[&BEQCAAA=]"
