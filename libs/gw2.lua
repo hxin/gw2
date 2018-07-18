@@ -46,7 +46,7 @@ function moveToNextNode()
     GW2.CELabel_node_counter.Caption = nodeCounter
 
     Player().moveToNode(nodes[nodekeys[nodeCounter]])
-
+    
     nodeCounter = nodeCounter + 1
     if nodeCounter > utilityTable().length(nodekeys) then nodeCounter = 1 end
 end
@@ -72,17 +72,20 @@ end
 function moveToNextResNode()
     if resNodeCounter == nil then resNodeCounter = 1 end
     
-    local nodes = Map().getCurrentMapNodes(true)
-    local nodesvalues = utilityTable().values(nodes)
-    local nodekeys = utilityTable().sortedKeys(nodes)
-    if resNodeCounter > utilityTable().length(nodekeys) then resNodeCounter = 1 end
-    GW2.CELabel_currentNodeInfo.Caption = nodekeys[resNodeCounter]
-    GW2.CELabel_node_counter.Caption = resNodeCounter
-
-    Player().moveToNode(nodes[nodekeys[resNodeCounter]])
-
-    resNodeCounter = resNodeCounter + 1
-   
+--    local nodes = NodeManager().getNodesFromResourceNodeArray()
+--    if utilityTable().length(nodes) ~= 0 then
+--       Player().moveToNode(nodes[utilityTable().keys(nodes)[1]])
+--       toggleFindNodes()
+--    else
+       local nodes = Map().getCurrentMapNodes(true)
+       local nodesvalues = utilityTable().values(nodes)
+       local nodekeys = utilityTable().sortedKeys(nodes)
+       Player().moveToNode(nodes[nodekeys[resNodeCounter]])
+       GW2.CELabel_currentNodeInfo.Caption = nodekeys[resNodeCounter]
+       GW2.CELabel_node_counter.Caption = resNodeCounter
+       resNodeCounter = resNodeCounter + 1
+       if resNodeCounter > utilityTable().length(nodekeys) then resNodeCounter = 1 end
+    --end
 end
 
 
@@ -104,30 +107,31 @@ function moveToPreviousResNode()
 end
 
 
-function updateNearNodesView()
-    local lv = GW2.CEListView_allNodes
-    listview_clear(lv)
+  function updateNearNodesView()
+      local lv = GW2.CEListView_allNodes
+      listview_clear(lv)
 
-    local items = lv.items
-    items.clear()
+      local items = lv.items
+      items.clear()
 
-    local nodes = NodeManager().getNodesFromAllNodeArray()
-    
-   --Map().saveAllNodesToMapFile(nodes)
-    
-    --local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'meta')
-    local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'identifier')
-    for _, k in ipairs(keys) do
-        n = nodes[k]
-        local item = items:add()
-        item.Caption = k
-        local row_subitems = listitem_getSubItems(item) --returns a Strings object
-        strings_add(row_subitems, n.toString())
-        strings_add(row_subitems, n.getIdentifier())
-        strings_add(row_subitems, n.getMeta())
-    end
-    
-end
+      local nodes = NodeManager().getNodesFromAllNodeArray()
+      --local nodes = NodeManager().getNodesFromResourceNodeArray()
+     
+      --Map().saveAllNodesToMapFile(nodes)
+      
+      --local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'meta')
+      local keys = utilityTable().sortedKeysByValueTableIndex(nodes,'identifier')
+      for _, k in ipairs(keys) do
+          n = nodes[k]
+          local item = items:add()
+          item.Caption = k
+          local row_subitems = listitem_getSubItems(item) --returns a Strings object
+          strings_add(row_subitems, n.toString())
+          strings_add(row_subitems, n.getIdentifier())
+          strings_add(row_subitems, n.getMeta())
+      end
+     
+  end
 
 
 function updateAnyMapNodesList(map_name)
@@ -202,7 +206,7 @@ function CEListView_allNodesClick(sender)
     local item = lv.Items[itemSelected]
     local node = NodeManager().getNodesFromAllNodeArray()[item.Caption]
     if not isEmpty(node) then Player().move(node.getX(), node.getY(), node.getZ()) end
-    nodeCounter = itemSelected
+    
 end
 
 
@@ -213,7 +217,13 @@ function CEListView_nodesClick(sender)
     local node = Map().getCurrentMapNodes()[item.Caption]
     if node == nil then node = Map().getCurrentMapNodes(true)[item.Caption] end
     Player().move(node.getX(), node.getY(), node.getZ())
-    nodeCounter = itemSelected
+    
+    resNodeCounter = itemSelected+1
+    nodeCounter = itemSelected + 1
+    GW2.CELabel_currentNodeInfo.Caption = item.Caption
+    GW2.CELabel_node_counter.Caption = resNodeCounter
+    
+
     --p(item.Caption)
     --p(item.SubItems[0])
     --p(item.SubItems[1])

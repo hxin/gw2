@@ -404,11 +404,11 @@ function NodeManager()
 
             if nodetype == nil then nodetype = 'unknown' end
             
-            
-            
+            local myid = Address(nodeBaseAddress.addOffset('0')).getValueHex()..';'..Address(nodeBaseAddress.addOffset('10')).getValueHex()..';'..Address(nodeBaseAddress.addOffset('D8')).getValueHex()..';'..Address(nodeBaseAddress.addOffset('12B')).getValueHex()..';'..Address(nodeBaseAddress.addOffset('15C')).getValueHex()..';'..Address(nodeBaseAddress.addOffset('16C')).getValueHex()..';'..Address(nodeBaseAddress.addOffset('190')).getValueHex()..'!!'
+
             local meta_string = nodeBaseAddress.recordValueToOffset('320')
 
-            local node = Node(x, y, z, nodetype, self.map_id, nodeBaseAddressHex..' '..meta_string, nodeidentifier)
+            local node = Node(x, y, z, nodetype, self.map_id, myid..nodeBaseAddressHex..' '..meta_string, nodeidentifier)
             nodes[node.generateIDString()] = node
         end
         return nodes
@@ -502,8 +502,9 @@ function NodeManager()
     function self.isResourceNode(add)
         local keys = {}
         local check = utilityTable().hasValue(self.getResIdentifier(), toHex(readInteger(addHex(add, '190'))))
-        --return readFloat(add) == 1 and readFloat(addHex(add, '28')) == 1 and readInteger(addHex(add, 'AC')) == 1 and check
-        return check
+        --check=true
+        return readFloat(addHex(add, '15C')) == 1 and readFloat(addHex(add, '16C')) == 1 and check
+        --return check
     end
 
     function self.getResIdentifier()

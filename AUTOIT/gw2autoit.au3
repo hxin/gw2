@@ -47,8 +47,12 @@ Global $is_ingame_try=10
 WinActivate($hWnd_gw2)
 reSizeWindow($hWnd_gw2)
 
-
+;~ while true
+;~ 	consolewritewithtime(hastool())
+;~ 	sleep(1000)
+;~ wend
 Wait()
+
 
 Func Main()
     While 1
@@ -101,7 +105,8 @@ Func Main()
 		 ControlHoldKey($hWnd_gw2,"s",50)
 		 Sleep(100)
 	  EndIf
-
+	  sleep(500)
+	  ;ConsoleWriteWithTime(canGather())
 	  While canGather()
 		 ;;gather
 		 ControlSend($hWnd_gw2, "", $hWnd_gw2, "{F}")

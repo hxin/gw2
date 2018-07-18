@@ -63,7 +63,7 @@ EndFunc
 Func canGather()
    Local $images[4] = [3,"img/wood.bmp", "img/mine.bmp", "img/herb.bmp"]
    ;ConsoleWriteWithTime("Checking canGather...",False)
-   Local $search = _WaitForImagesSearch($images,1,0,$x, $y,50)
+   Local $search = _WaitForImagesSearch($images,1,0,$x, $y,75)
    If $search = 0 Then
 	  ;ConsoleWriteWithTime("No")
 	  Return False
@@ -86,7 +86,7 @@ EndFunc
 
 Func hasTool()
    ;ConsoleWriteWithTime("Checking hasTool...",False)
-   Local $search = _ImageSearchInGame('img/notool.bmp', 0, $x, $y, 10)
+   Local $search = _ImageSearchInGame('img/notool.bmp', 0, $x, $y, 100)
    If $search = 0 Then
 	  ;ConsoleWriteWithTime("Yes")
 	  Return True
