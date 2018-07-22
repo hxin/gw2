@@ -1,6 +1,34 @@
 form_show(GW2)
 
 
+function findBaseAdd()
+    if (playerBaseAddTimer == nil) then --first time init
+        playerBaseAddTimer = createTimer(nil, false)
+
+        timer_setInterval(playerBaseAddTimer, 1000) --set value every 100 milliseconds
+        playerBaseAddTimer.OnTimer = function()
+          
+          local flag = readInteger("[[[[Gw2.exe+01924654]+E0]+10]+8]+34")
+          if(flag ~= nil) then 
+            --speed
+            unregisterSymbol('playerBase')
+            registerSymbol('playerBase', toHex(getAddress("[[[[Gw2.exe+01924654]+E0]+10]+8]+34")) )
+            --mapid
+            unregisterSymbol('mapIDBase')
+            registerSymbol('mapIDBase', toHex(getAddress("Gw2.exe+0052AB9C")))
+          end
+        end
+        timer_setEnabled(playerBaseAddTimer, true)
+    else
+        timer_setEnabled(playerBaseAddTimer, false) --stop the freezer
+        playerBaseAddTimer.destroy()
+        playerBaseAddTimer = nil
+    end    
+    --pd(toHex(getAddress('playerBase')))
+end
+
+
+
 function updatePlayStat()
     
    if addressList.getMemoryRecordByDescription('X').value ~= '??' then

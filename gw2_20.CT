@@ -100,7 +100,7 @@ luacall(findBaseAdd())
         <CheatEntry>
           <ID>35</ID>
           <Description>"X"</Description>
-          <LastState Value="10.84204483" RealAddress="5623C890"/>
+          <LastState Value="815.3411255" RealAddress="5C3C0120"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+98</Address>
           <Offsets>
@@ -130,7 +130,7 @@ luacall(findBaseAdd())
         <CheatEntry>
           <ID>36</ID>
           <Description>"Y"</Description>
-          <LastState Value="-1443.164917" RealAddress="5623C894"/>
+          <LastState Value="686.3674316" RealAddress="5C3C0124"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+98</Address>
           <Offsets>
@@ -160,7 +160,7 @@ luacall(findBaseAdd())
         <CheatEntry>
           <ID>37</ID>
           <Description>"Z"</Description>
-          <LastState Value="32.534935" RealAddress="5623C898"/>
+          <LastState Value="47.12834549" RealAddress="5C3C0128"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+98</Address>
           <Offsets>
@@ -198,14 +198,14 @@ luacall(findBaseAdd())
         <CheatEntry>
           <ID>114</ID>
           <Description>"grv"</Description>
-          <LastState Value="-40.625" RealAddress="20898A34"/>
+          <LastState Value="-40.625" RealAddress="16AD0484"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+1C4</Address>
         </CheatEntry>
         <CheatEntry>
           <ID>9</ID>
           <Description>"speed"</Description>
-          <LastState Value="18" Activated="1" RealAddress="20898A54"/>
+          <LastState Value="18" Activated="1" RealAddress="16AD04A4"/>
           <VariableType>Float</VariableType>
           <Address>[playerBase]+1E4</Address>
           <CheatEntries>
@@ -315,7 +315,7 @@ dealloc(newmem)
         <CheatEntry>
           <ID>100</ID>
           <Description>"map_id"</Description>
-          <LastState Value="25" RealAddress="025726EC"/>
+          <LastState Value="19" RealAddress="025726EC"/>
           <VariableType>4 Bytes</VariableType>
           <Address>[mapIDBase] + 24</Address>
         </CheatEntry>
@@ -535,8 +535,8 @@ dealloc(newmem)
     </CheatEntry>
     <CheatEntry>
       <ID>126</ID>
-      <Description>"map_pointer"</Description>
-      <LastState Value="25" RealAddress="025726EC"/>
+      <Description>"pointerscan result"</Description>
+      <LastState Value="19" RealAddress="025726EC"/>
       <VariableType>4 Bytes</VariableType>
       <Address>"Gw2.exe"+0052AB9C</Address>
       <Offsets>
@@ -545,8 +545,8 @@ dealloc(newmem)
     </CheatEntry>
     <CheatEntry>
       <ID>127</ID>
-      <Description>"speed_pointer"</Description>
-      <LastState Value="18" RealAddress="20898A54"/>
+      <Description>"pointerscan result"</Description>
+      <LastState Value="18" RealAddress="16AD04A4"/>
       <VariableType>Float</VariableType>
       <Address>"Gw2.exe"+01924654</Address>
       <Offsets>
@@ -654,7 +654,7 @@ dealloc(newmem)
     </SymbolEntry>
     <SymbolEntry>
       <Name>playerBase</Name>
-      <Address>EBA3194</Address>
+      <Address>1910FAE4</Address>
     </SymbolEntry>
   </UserdefinedSymbols>
   <Structures StructVersion="2">
