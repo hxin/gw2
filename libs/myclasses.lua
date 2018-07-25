@@ -35,7 +35,7 @@ function Map()
     end
 
     function self.getCurrentMapID()
-        self.current_map_id = readInteger('[mapIDBase] + 24')
+        self.current_map_id = readInteger('mapIDBase')
         return self.current_map_id
     end
 

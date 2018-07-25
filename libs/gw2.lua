@@ -8,14 +8,14 @@ function findBaseAdd()
         timer_setInterval(playerBaseAddTimer, 1000) --set value every 100 milliseconds
         playerBaseAddTimer.OnTimer = function()
           
-          local flag = readInteger("[Gw2.exe+019CF9F0]+34")
+          local flag = readInteger("[Gw2.exe+019D2A60]+34")
           if(flag ~= nil) then 
             --speed
             unregisterSymbol('playerBase')
-            registerSymbol('playerBase', toHex(getAddress("[Gw2.exe+019CF9F0]+34")) )
+            registerSymbol('playerBase', toHex(getAddress("[Gw2.exe+019D2A60]+34")) )
             --mapid
             unregisterSymbol('mapIDBase')
-            registerSymbol('mapIDBase', toHex(getAddress("Gw2.exe+0052AB9C")))
+            registerSymbol('mapIDBase', toHex(getAddress("[Gw2.exe+000A7E20]+40")))
           end
         end
         timer_setEnabled(playerBaseAddTimer, true)
