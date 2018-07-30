@@ -59,6 +59,9 @@ end
 
 
 function toHex(number_string)
+    if isEmpty(number_string) then
+      return ''
+    end  
     return string.format('%X', number_string)
 end
 

@@ -28,6 +28,19 @@ Func _ImageSearchInGame($findImage,$resultPosition,ByRef $x, ByRef $y,$tolerance
 EndFunc
 
 
+Func _ImagesSearchArea($findImage,$resultPosition,$x1,$y1,$right,$bottom,ByRef $x, ByRef $y,$tolerance)
+	for $i = 1 to $findImage[0]
+			sleep(50)
+            $result=_ImageSearchArea($findImage[$i],$resultPosition,$x1,$y1,$right,$bottom,$x, $y,$tolerance)
+            if $result > 0 Then
+                return $i
+            EndIf
+        Next
+    return 0
+EndFunc
+
+ 
+
 Func _ImageSearchArea($findImage,$resultPosition,$x1,$y1,$right,$bottom,ByRef $x, ByRef $y, $tolerance)
     ;MsgBox(0,"asd","" & $x1 & " " & $y1 & " " & $right & " " & $bottom)
     if $tolerance>0 then $findImage = "*" & $tolerance & " " & $findImage
@@ -117,3 +130,21 @@ Func _WaitForImagesSearch($findImage,$waitSecs,$resultPosition,ByRef $x, ByRef $
     WEnd
     return 0
 EndFunc
+
+Func _WaitForImagesSearchArea($findImage,$waitSecs,$resultPosition,$x1,$y1,$right,$bottom,ByRef $x, ByRef $y,$tolerance)
+    $waitSecs = $waitSecs * 1000
+    $startTime=TimerInit()
+    While TimerDiff($startTime) < $waitSecs
+        for $i = 1 to $findImage[0]
+            sleep(50)
+            $result=_ImageSearchArea($findImage[$i],$resultPosition,$x1,$y1,$right,$bottom,$x, $y,$tolerance)
+            if $result > 0 Then
+                return $i
+            EndIf
+        Next
+    WEnd
+    return 0
+EndFunc
+
+
+

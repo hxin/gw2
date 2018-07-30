@@ -63,9 +63,11 @@ EndFunc
 Func canGather()
    Local $images[4] = [3,"img/wood.bmp", "img/mine.bmp", "img/herb.bmp"]
    ;ConsoleWriteWithTime("Checking canGather...",False)
-   Local $search = _WaitForImagesSearch($images,1,0,$x, $y,75)
+   ;Local $search = _WaitForImagesSearch($images,1,0,$x, $y,85)
+   Local $search = _WaitForImagesSearchArea($images,0.5,0,853,645,1082,694, $x, $y, 75)
+	;Local $search = _ImageSearchInGame($images,0,$x, $y,85)
    If $search = 0 Then
-	  ;ConsoleWriteWithTime("No")
+	  ConsoleWriteWithTime("No")
 	  Return False
    Else
 	  Switch $search
@@ -79,7 +81,7 @@ Func canGather()
 			  $statstic_count_h = $statstic_count_h +1
 			  $current_gather='h'
 	  EndSwitch
-	  ConsoleWriteWithTime("Found " & $images[$search]  & "  w:" & $statstic_count_w & " m:" & $statstic_count_m & " h:" & $statstic_count_h & " total:" & $statstic_count_m+$statstic_count_h+$statstic_count_w & " counter:" & $counter &  " Totalcounter:" & $statstic_count_total)
+	  ConsoleWriteWithTime("Found " & $images[$search] &  " "  & $current_gather  & "  w:" & $statstic_count_w & " m:" & $statstic_count_m & " h:" & $statstic_count_h & " total:" & $statstic_count_m+$statstic_count_h+$statstic_count_w & " counter:" & $counter &  " Totalcounter:" & $statstic_count_total)
 	  Return $search
    EndIf
 EndFunc

@@ -87,6 +87,11 @@ function Map()
         local filename = 'locations/' .. map_name .. '_all.ini'
         self.saveNodesToMapFile(nodes,filename)
     end
+    
+--    function self.addNodeToMap(node, resource)
+--        local old_nodes = self.getCurrentMapNodes(resource)
+--        table.insert(old_nodes, Node().toNodeForSaving(node))
+--    end
 
 
 
@@ -100,19 +105,21 @@ function Map()
 end
 
 
-function Node(x, y, z, nodetype, map, meta, identifier)
+function Node(x, y, z, nodetype, map, meta, identifier,pos)
     if isEmpty(identifier) then identifier = '' end
-    
+    if isEmpty(pos) then pos = 0 end
+      
     local self = myObject {}
 
     self.x = x
     self.y = y
-    self.z = z
+    self.z = z    
     self.nodetype = nodetype
     self.map = map
     self.meta = meta
     self.identifier = identifier
-
+    self.pos = pos
+    
     function self.getX()
         return self.x
     end
@@ -155,7 +162,8 @@ function Node(x, y, z, nodetype, map, meta, identifier)
     end
 
     function self.toNodeForSaving(node)
-        return { x = node.getX(), y = node.getY(), z = node.getZ(), nodetype = node.getNodeType(), map = node.getMap(), meta = node.getMeta(), identifier = node.getIdentifier()}
+        --return { x = node.getX(), y = node.getY(), z = node.getZ(), nodetype = node.getNodeType(), map = node.getMap(), meta = node.getMeta(), identifier = node.getIdentifier()}
+        return { x = node.getX(), y = node.getY(), z = node.getZ(), nodetype = node.getNodeType(), map = node.getMap(), meta = '', identifier = node.getIdentifier()}
     end
 
     local TYPES = {
@@ -315,6 +323,9 @@ function Player()
 
     local speed = nil
     local speedAddress = Address(baseAddress.addOffset('1E4'))
+    
+    local grv = nil
+    local grvAddress = Address(baseAddress.addOffset('1C4'))
 
     local xAddress = Address(toHex(getAddress("[" .. baseAddressHex .. " + 98] + D0")))
     local yAddress = Address(xAddress.addOffset('4'))
@@ -326,10 +337,24 @@ function Player()
         speed = speedAddress.getValueFloat()
         return speed
     end
+    
 
     function self.setSpeed(float)
         speedAddress.setValueFloat(float)
         speed = self.getSpeed()
+        return self
+    end
+    
+    
+    function self.getGrv()
+        grv = grvAddress.getValueFloat()
+        return grv
+    end
+    
+
+    function self.setGrv(float)
+        grvAddress.setValueFloat(float)
+        grv = self.getGrv()
         return self
     end
 
@@ -348,7 +373,7 @@ function Player()
     end
 
     function self.moveToNode(node)
-        self.move(node.getX(), node.getY(), node.getZ())
+        if not isEmpty(node.getX()) then self.move(node.getX(), node.getY(), node.getZ()) end
         return self
     end
 
@@ -443,7 +468,11 @@ function NodeManager()
         local size = readInteger('nbarr_size')
         local envListAddress = toHex(getAddress('nbarr'))
         local envList = {}
-
+        
+        if size<1 then
+          return {}
+        end
+        
         for i = 1, size, 1 do
             local add = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
             if self.isResourceNode(add) then
@@ -472,9 +501,15 @@ function NodeManager()
         local envListAddress = toHex(getAddress('nbarr'))
         local envList = {}
 
+        if size<1 then
+          return {}
+        end
+
         for i = 1, size, 1 do
             local add = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
-            envList[i] = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
+            if self.isResourceNode2(add) then
+              envList[i] = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
+            end
         end
         return envList
     end
@@ -506,6 +541,14 @@ function NodeManager()
         return readFloat(addHex(add, '15C')) == 1 and readFloat(addHex(add, '16C')) == 1 and check
         --return check
     end
+    
+    function self.isResourceNode2(add)
+        local keys = {}
+        local check = utilityTable().hasValue(self.getResIdentifier(), toHex(readInteger(addHex(add, '190'))))
+        check=true
+        return readFloat(addHex(add, '15C')) == 1 and readFloat(addHex(add, '16C')) == 1 and check
+        --return check
+    end
 
     function self.getResIdentifier()
         local id = utilityFile().readINI('data/Node.ini')['id']
@@ -515,6 +558,7 @@ function NodeManager()
         end
         return id_hex
     end
+
 
     return self
 end

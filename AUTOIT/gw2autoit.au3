@@ -26,7 +26,7 @@ EndIf
 ;MsgBox($MB_SYSTEMMODAL, "", $hWnd_ce)
 
 Global $x=0,$y=0,$missing_tool,$current_gather
-Global $counter=0,$max_count=800,$always_active=1
+Global $counter=0,$max_count=999999,$always_active=1
 Global $gameWindowSize_x=WinGetPos($hWnd_gw2)[0],$gameWindowSize_y=WinGetPos($hWnd_gw2)[1],$gameWindowSize_right=WinGetPos($hWnd_gw2)[2],$gameWindowSize_bottom=WinGetPos($hWnd_gw2)[3]
 ;Global $wp_text_image = 'img/bc_deadend_wp.bmp',$wp_text="[&BAsEAAA=]"
 ;Global $wp_text_image = 'img/tf_talus_wp.bmp',$wp_text="[&BEQCAAA=]"
@@ -40,16 +40,17 @@ Global $is_ingame_try=10
 ;sayInGame($wp_text)
 ;_ArrayAdd($statstic_count_die, 10)
 ;_ArrayAdd($statstic_count_die, 20)
-;_ArrayDisplay($statstic_count_die, "1D - Single")
+;_ArrayDisplay($statstic_count_die, "1D - Single")	
 ;ConsoleWrite(_ArrayToString($statstic_count_die, ','))
 ;ConsoleWrite(UBound($statstic_count_die))
 
 WinActivate($hWnd_gw2)
 reSizeWindow($hWnd_gw2)
 
-;~ while true
+;~  while true
+;~ 	cangather()
 ;~ 	consolewritewithtime(hastool())
-;~ 	sleep(1000)
+;~  	sleep(1000)
 ;~ wend
 Wait()
 
@@ -57,7 +58,7 @@ Wait()
 Func Main()
     While 1
 	  ;If $always_active == 1 Then
-		 WinActivate($hWnd_gw2)
+		 WinActivate($hWnd_gw2)	
 	  ;EndIf
 
 	  ;;choose character when in CharacterSelect
@@ -103,16 +104,19 @@ Func Main()
 		 Sleep(10)
 		 ;;step back to refresh
 		 ControlHoldKey($hWnd_gw2,"s",50)
-		 Sleep(100)
+		 Sleep(50)
 	  EndIf
-	  sleep(500)
-	  ;ConsoleWriteWithTime(canGather())
+	  sleep(150)
+	  ;;ConsoleWriteWithTime(canGather())
+	  $try = 4
 	  While canGather()
+		 $try = $try - 1
 		 ;;gather
 		 ControlSend($hWnd_gw2, "", $hWnd_gw2, "{F}")
-		 Sleep(4800)
-		 If NOT hasTool() Then
+		 Sleep(5000)
+		 If NOT hasTool() or $try<0 Then
 			equTool()
+			$try = 4
 		 EndIf
 	  WEnd
 
