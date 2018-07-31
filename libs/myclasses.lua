@@ -507,9 +507,9 @@ function NodeManager()
 
         for i = 1, size, 1 do
             local add = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
-            if self.isResourceNode2(add) then
+            --if self.isResourceNode2(add) then
               envList[i] = toHex(readInteger(addHex(envListAddress, toHex(4 * i))))
-            end
+            --end
         end
         return envList
     end

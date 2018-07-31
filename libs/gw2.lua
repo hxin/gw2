@@ -41,9 +41,9 @@ function updatePlayStat()
       GW2.CELabel_speed.Caption = Player().getSpeed()
       GW2.CELabel_grv.Caption = Player().getGrv()
       GW2.CELabel_map_id.Caption = Map().getCurrentMapID()
-      if addressList.getMemoryRecordByDescription('findResourceNode').Active == true then
-        addNodesToMapFile()
-      end
+      --if addressList.getMemoryRecordByDescription('findResourceNode').Active == true then
+      --  addNodesToMapFile()
+      --end
     end
   end
 
